@@ -136,7 +136,10 @@ export async function POST(request: Request) {
 
     let animeList: AnimeResult[]
     try {
-      animeList = JSON.parse(block.text)
+      let text = block.text.trim()
+      const fenceMatch = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/)
+      if (fenceMatch) text = fenceMatch[1].trim()
+      animeList = JSON.parse(text)
     } catch {
       return Response.json({ error: 'Failed to parse model response' }, { status: 500 })
     }

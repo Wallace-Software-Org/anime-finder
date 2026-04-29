@@ -26,15 +26,15 @@ export default function BottomNavigation({
   onNext: () => void;
 }) {
   return (
-    <div className="px-6 pb-6 pt-2 flex gap-3 max-w-sm w-full justify-center">
-      {step > 1 && (
+    <div className="flex gap-3 justify-center w-full min-w-xs md:min-w-sm self-center">
+      {/* {step > 1 && (
         <button
           onClick={onBack}
           className="flex items-center justify-center w-12 h-12 rounded-full bg-surface border border-border text-white hover:border-accent/40 transition-colors duration-150 shrink-0"
         >
           <BackArrow />
         </button>
-      )}
+      )} */}
       <button
         onClick={onNext}
         disabled={!canProceed || loading}
