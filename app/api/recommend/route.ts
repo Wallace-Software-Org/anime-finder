@@ -9,36 +9,43 @@ interface AnimeResult {
   title: string
   year: number
   episodes: number
-  malId: number
   whyItFits: string
   hiddenGemNote: string
 }
 
 interface EnrichedAnime extends AnimeResult {
+  malId: number | null
   malScore: number | null
   anilistScore: number | null
   anilistId: number | null
 }
 
-async function fetchMALScore(malId: number): Promise<number | null> {
+async function fetchMALData(
+  title: string
+): Promise<{ score: number | null; id: number | null }> {
   const clientId = process.env.MAL_CLIENT_ID
-  if (!clientId) return null
+  if (!clientId) return { score: null, id: null }
 
   try {
     const res = await fetch(
-      `https://api.myanimelist.net/v2/anime/${malId}?fields=mean`,
+      `https://api.myanimelist.net/v2/anime?q=${encodeURIComponent(title)}&limit=1&fields=mean`,
       { headers: { 'X-MAL-Client-ID': clientId } }
     )
-    if (!res.ok) return null
+    if (!res.ok) return { score: null, id: null }
     const data = await res.json()
-    return typeof data.mean === 'number' ? data.mean : null
+    const node = data?.data?.[0]?.node
+    if (!node) return { score: null, id: null }
+    return {
+      score: typeof node.mean === 'number' ? node.mean : null,
+      id: typeof node.id === 'number' ? node.id : null,
+    }
   } catch {
-    return null
+    return { score: null, id: null }
   }
 }
 
 async function fetchAniListData(
-  malId: number
+  title: string
 ): Promise<{ score: number | null; id: number | null }> {
   try {
     const res = await fetch('https://graphql.anilist.co', {
@@ -46,14 +53,14 @@ async function fetchAniListData(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query: `
-          query ($idMal: Int) {
-            Media(idMal: $idMal, type: ANIME) {
+          query ($search: String) {
+            Media(search: $search, type: ANIME) {
               id
               averageScore
             }
           }
         `,
-        variables: { idMal: malId },
+        variables: { search: title },
       }),
     })
     if (!res.ok) return { score: null, id: null }
@@ -70,13 +77,14 @@ async function fetchAniListData(
 }
 
 async function enrichAnime(anime: AnimeResult): Promise<EnrichedAnime> {
-  const [malScore, anilist] = await Promise.all([
-    fetchMALScore(anime.malId),
-    fetchAniListData(anime.malId),
+  const [mal, anilist] = await Promise.all([
+    fetchMALData(anime.title),
+    fetchAniListData(anime.title),
   ])
   return {
     ...anime,
-    malScore,
+    malId: mal.id,
+    malScore: mal.score,
     anilistScore: anilist.score,
     anilistId: anilist.id,
   }

@@ -24,7 +24,6 @@ Each object must have these exact fields:
 - "title": string — the most common English title
 - "year": number — year the show first aired
 - "episodes": number — total episode count (use 0 if unknown or ongoing)
-- "malId": number — the correct MyAnimeList anime ID (integer)
 - "whyItFits": string — 2-3 sentences explaining why this matches the taste profile
 - "hiddenGemNote": string — 1-2 sentences on why it is underrated or overlooked`;
 

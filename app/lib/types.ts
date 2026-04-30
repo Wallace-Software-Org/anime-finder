@@ -18,7 +18,7 @@ export interface Recommendation {
   title: string;
   year: number;
   episodes: number;
-  malId: number;
+  malId: number | null;
   whyItFits: string;
   hiddenGemNote: string;
   malScore: number | null;

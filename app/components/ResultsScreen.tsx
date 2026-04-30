@@ -52,18 +52,25 @@ function ResultCard({ rec }: { rec: Recommendation }) {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <a
-          href={`https://myanimelist.net/anime/${rec.malId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm hover:border-accent/40 transition-colors duration-150"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-          <span className="text-white font-medium">
-            MAL {rec.malScore != null ? rec.malScore.toFixed(1) : "—"}
+        {rec.malId != null ? (
+          <a
+            href={`https://myanimelist.net/anime/${rec.malId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm hover:border-accent/40 transition-colors duration-150"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+            <span className="text-white font-medium">
+              MAL {rec.malScore != null ? rec.malScore.toFixed(1) : "—"}
+            </span>
+            <ExternalLinkIcon />
+          </a>
+        ) : rec.malScore != null ? (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+            <span className="text-white font-medium">MAL {rec.malScore.toFixed(1)}</span>
           </span>
-          <ExternalLinkIcon />
-        </a>
+        ) : null}
 
         {rec.anilistId != null && (
           <a
