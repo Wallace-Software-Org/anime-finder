@@ -82,7 +82,7 @@ export default function ResultsScreen({
   onStartOver: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-6 pb-8">
+    <div className="flex flex-col gap-6 pb-8 sm:max-w-xl ">
       <div>
         <h2 className="text-2xl font-bold">Your hidden gems</h2>
         <p className="text-sm text-muted mt-1">Picked for your taste</p>

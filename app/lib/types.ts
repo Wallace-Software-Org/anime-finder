@@ -1,3 +1,19 @@
+export type ExperienceLevel =
+  | "beginner"
+  | "casual"
+  | "seasoned"
+  | "deep"
+  | "veteran";
+
+export interface QuizAnswers {
+  experience: ExperienceLevel | "";
+  mood: string;
+  themes: string[];
+  commitment: string;
+  reference: string;
+  avoid: string[];
+}
+
 export interface Recommendation {
   title: string;
   year: number;

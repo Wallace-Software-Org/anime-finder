@@ -12,41 +12,68 @@ function BackArrow() {
   );
 }
 
+function NavigationButton({
+  onClick,
+  disabled,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={[
+        "flex-1 h-12 rounded-full w-40 font-semibold text-base transition-opacity duration-150 flex items-center justify-center gap-2",
+        !disabled
+          ? "bg-surface border border-border text-white hover:border-accent/40"
+          : "bg-surface border border-border text-muted cursor-not-allowed opacity-50",
+      ].join(" ")}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function BottomNavigation({
   step,
+  totalSteps,
   canProceed,
   loading,
   onBack,
   onNext,
 }: {
   step: number;
+  totalSteps: number;
   canProceed: boolean;
   loading: boolean;
   onBack: () => void;
   onNext: () => void;
 }) {
+  const showBackButton = step > 1;
+
   return (
-    <div className="flex gap-3 justify-center w-full min-w-xs md:min-w-sm self-center">
-      {/* {step > 1 && (
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center w-12 h-12 rounded-full bg-surface border border-border text-white hover:border-accent/40 transition-colors duration-150 shrink-0"
-        >
-          <BackArrow />
-        </button>
-      )} */}
-      <button
-        onClick={onNext}
-        disabled={!canProceed || loading}
-        className={[
-          "flex-1 h-12 rounded-full font-semibold text-base transition-opacity duration-150",
-          canProceed && !loading
-            ? "bg-surface border border-border text-white hover:border-accent/40"
-            : "bg-surface border border-border text-muted cursor-not-allowed opacity-50",
-        ].join(" ")}
-      >
-        {loading ? "Finding your gems…" : step === 5 ? "Find my anime" : "Next"}
-      </button>
+    <div
+      className={[
+        "flex flex-row justify-center items-center",
+        showBackButton ? "gap-4" : "",
+      ].join(" ")}
+    >
+      {showBackButton && (
+        <NavigationButton onClick={onBack} disabled={loading}>
+          {/* <BackArrow /> */}
+          Back
+        </NavigationButton>
+      )}
+      <NavigationButton onClick={onNext} disabled={!canProceed || loading}>
+        {loading
+          ? "Finding gems…"
+          : step === totalSteps
+            ? "Find my anime"
+            : "Next"}
+      </NavigationButton>
     </div>
   );
 }

@@ -1,3 +1,11 @@
+export const EXPERIENCE_OPTIONS = [
+  { emoji: "🌱", label: "Just getting started", value: "beginner" },
+  { emoji: "📺", label: "Watched a decent amount", value: "casual" },
+  { emoji: "🎌", label: "Seen most of the classics", value: "seasoned" },
+  { emoji: "🔍", label: "Pretty deep in the rabbit hole", value: "deep" },
+  { emoji: "🕳️", label: "I've seen everything, find me something obscure", value: "veteran" },
+];
+
 export const MOOD_OPTIONS = [
   { emoji: "🔥", label: "Intense, edge of my seat", value: "intense" },
   { emoji: "😮‍💨", label: "Chill, something to relax into", value: "chill" },

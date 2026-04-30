@@ -1,13 +1,15 @@
 export default function ProgressBar({
   step,
+  totalSteps,
   onGoToStep,
 }: {
   step: number;
+  totalSteps: number;
   onGoToStep: (s: number) => void;
 }) {
   return (
     <div className="flex gap-1.5 px-6 mt-4">
-      {Array.from({ length: 5 }, (_, i) => {
+      {Array.from({ length: totalSteps }, (_, i) => {
         const seg = i + 1;
         const done = seg <= step;
         const clickable = seg < step;

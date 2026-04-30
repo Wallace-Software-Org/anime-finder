@@ -1,14 +1,16 @@
 export default function Header({
   isQuiz,
   step,
+  totalSteps,
   onLogoClick,
 }: {
   isQuiz: boolean;
   step: number;
+  totalSteps: number;
   onLogoClick: () => void;
 }) {
   return (
-    <header className="flex items-center justify-between px-6 pt-6 pb-0 w-full">
+    <header className="fixed z-50 flex items-center justify-between px-6 py-6 w-full bg-background">
       <button
         onClick={onLogoClick}
         className="flex items-center gap-2.5 cursor-pointer"
@@ -19,7 +21,9 @@ export default function Header({
         <span className="font-semibold text-white text-base">HiddenPick</span>
       </button>
       {isQuiz && (
-        <span className="text-sm text-muted font-medium">{step} of 5</span>
+        <span className="text-sm text-muted font-medium">
+          {step} of {totalSteps}
+        </span>
       )}
     </header>
   );

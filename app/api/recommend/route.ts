@@ -1,25 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { SYSTEM_PROMPT, buildUserMessage } from '../../lib/prompts'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
-
-const SYSTEM_PROMPT = `You are an anime recommendation expert specializing in hidden gems — shows with fewer than 500,000 members on MyAnimeList that are not mainstream hits.
-
-Rules:
-- Only recommend anime with under 500,000 MAL members
-- Never recommend globally recognized mainstream hits such as: Attack on Titan, Demon Slayer, One Piece, Naruto, Dragon Ball, Death Note, Fullmetal Alchemist Brotherhood, Sword Art Online, Tokyo Ghoul, Hunter x Hunter, My Hero Academia, Bleach, Jujutsu Kaisen, Chainsaw Man, Spy x Family, or anything similarly well-known
-- Prefer genuinely obscure works that have dedicated fan followings but are rarely discovered organically
-- Return ONLY valid JSON — no markdown fences, no explanation, no preamble, no trailing text
-- The JSON must be an array of exactly 5 objects
-
-Each object must have these exact fields:
-- "title": string — the most common English title
-- "year": number — year the show first aired
-- "episodes": number — total episode count (use 0 if unknown or ongoing)
-- "malId": number — the correct MyAnimeList anime ID (integer)
-- "whyItFits": string — 2-3 sentences explaining why this matches the taste profile
-- "hiddenGemNote": string — 1-2 sentences on why it is underrated or overlooked`
 
 interface AnimeResult {
   title: string
@@ -100,21 +84,17 @@ async function enrichAnime(anime: AnimeResult): Promise<EnrichedAnime> {
 
 export async function POST(request: Request) {
   try {
-    const { mood, themes, commitment, reference, avoid } = await request.json()
+    const { experience, mood, themes, commitment, reference, avoid } =
+      await request.json()
 
-    const parts: string[] = [
-      `Find me 5 hidden gem anime with these preferences:`,
-      `- Mood: ${mood}`,
-      `- Core themes: ${(themes as string[]).join(', ')}`,
-      `- Episode commitment: ${commitment}`,
-    ]
-    if (reference?.trim()) {
-      parts.push(`- Reference show I love: ${reference.trim()}`)
-    }
-    if ((avoid as string[]).length > 0) {
-      parts.push(`- Things to avoid: ${(avoid as string[]).join(', ')}`)
-    }
-    const userMessage = parts.join('\n')
+    const userMessage = buildUserMessage({
+      experience,
+      mood,
+      themes,
+      commitment,
+      reference,
+      avoid,
+    })
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
