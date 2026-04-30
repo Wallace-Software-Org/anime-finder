@@ -34,6 +34,7 @@ export default function Page() {
     results,
     loading,
     error,
+    handleFilter,
     canProceed,
     handleNext,
     handleBack,
@@ -190,7 +191,12 @@ export default function Page() {
           )}
 
           {isResults && results && (
-            <ResultsScreen results={results} onStartOver={handleStartOver} />
+            <ResultsScreen
+              results={results}
+              onStartOver={handleStartOver}
+              onFilter={handleFilter}
+              loading={loading}
+            />
           )}
 
           {error && <p className="mt-4 text-red-400 text-sm">{error}</p>}

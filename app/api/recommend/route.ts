@@ -84,7 +84,7 @@ async function enrichAnime(anime: AnimeResult): Promise<EnrichedAnime> {
 
 export async function POST(request: Request) {
   try {
-    const { experience, mood, themes, commitment, reference, avoid } =
+    const { experience, mood, themes, commitment, reference, avoid, era = ["any"] } =
       await request.json()
 
     const userMessage = buildUserMessage({
@@ -94,6 +94,7 @@ export async function POST(request: Request) {
       commitment,
       reference,
       avoid,
+      era,
     })
 
     const message = await anthropic.messages.create({

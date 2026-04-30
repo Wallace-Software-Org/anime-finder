@@ -35,6 +35,7 @@ export function buildUserMessage({
   commitment,
   reference,
   avoid,
+  era,
 }: {
   experience: string;
   mood: string;
@@ -42,6 +43,7 @@ export function buildUserMessage({
   commitment: string;
   reference: string;
   avoid: string[];
+  era: string[];
 }): string {
   const experienceInstruction =
     EXPERIENCE_MAP[experience] ?? EXPERIENCE_MAP.seasoned;
@@ -59,6 +61,9 @@ export function buildUserMessage({
   }
   if (avoid.length > 0) {
     parts.push(`- Things to avoid: ${avoid.join(", ")}`);
+  }
+  if (!era.includes("any") && era.length > 0) {
+    parts.push(`- Era restriction: only recommend anime that first aired in: ${era.join(", ")}`);
   }
 
   return parts.join("\n");

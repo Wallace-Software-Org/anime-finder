@@ -16,6 +16,7 @@ export function useQuiz() {
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [era, setEra] = useState<string[]>(["any"]);
 
   // q1=experience, q2=mood, q3=themes, q4=commitment, q5=reference, q6=avoid
   const canProceed = () => {
@@ -58,6 +59,7 @@ export function useQuiz() {
           commitment,
           reference,
           avoid,
+          era,
         }),
       });
       if (!res.ok) {
@@ -67,6 +69,37 @@ export function useQuiz() {
       const data: Recommendation[] = await res.json();
       setResults(data);
       setStep(TOTAL_STEPS + 1);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilter = async (selectedEra: string[]) => {
+    setEra(selectedEra);
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          experience,
+          mood,
+          themes,
+          commitment,
+          reference,
+          avoid,
+          era: selectedEra,
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Something went wrong");
+      }
+      const data: Recommendation[] = await res.json();
+      setResults(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -86,6 +119,7 @@ export function useQuiz() {
     setAvoid([]);
     setResults(null);
     setError("");
+    setEra(["any"]);
   };
 
   const goToStep = (s: number) => {
@@ -110,6 +144,8 @@ export function useQuiz() {
     results,
     loading,
     error,
+    era,
+    handleFilter,
     canProceed,
     handleNext,
     handleBack,
