@@ -35,6 +35,7 @@ export function buildUserMessage({
   reference,
   avoid,
   era,
+  exclude,
 }: {
   experience: string;
   mood: string;
@@ -43,6 +44,7 @@ export function buildUserMessage({
   reference: string;
   avoid: string[];
   era: string[];
+  exclude: string[];
 }): string {
   const experienceInstruction =
     EXPERIENCE_MAP[experience] ?? EXPERIENCE_MAP.seasoned;
@@ -63,6 +65,9 @@ export function buildUserMessage({
   }
   if (!era.includes("any") && era.length > 0) {
     parts.push(`- Era restriction: only recommend anime that first aired in: ${era.join(", ")}`);
+  }
+  if (exclude.length > 0) {
+    parts.push(`- Do not recommend any of these titles: ${exclude.join(", ")}`);
   }
 
   return parts.join("\n");

@@ -35,6 +35,7 @@ export default function Page() {
     loading,
     error,
     handleFilter,
+    handleFindMore,
     canProceed,
     handleNext,
     handleBack,
@@ -71,7 +72,7 @@ export default function Page() {
         />
       )}
 
-      <main className="flex flex-col overflow-hidden items-center justify-center h-full py-12 md:py-16 lg:py-24">
+      <main className="flex flex-col overflow-hidden items-center justify-center h-full pt-12 pb-0 md:pt-16 lg:pt-24">
         <div
           key={step}
           className={[
@@ -195,6 +196,7 @@ export default function Page() {
               results={results}
               onStartOver={handleStartOver}
               onFilter={handleFilter}
+              onFindMore={handleFindMore}
               loading={loading}
             />
           )}

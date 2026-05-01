@@ -107,6 +107,38 @@ export function useQuiz() {
     }
   };
 
+  const handleFindMore = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const exclude = results?.map((r) => r.title) ?? [];
+      const res = await fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          experience,
+          mood,
+          themes,
+          commitment,
+          reference,
+          avoid,
+          era,
+          exclude,
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Something went wrong");
+      }
+      const data: Recommendation[] = await res.json();
+      setResults((prev) => [...(prev ?? []), ...data]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBack = () => setStep((s) => s - 1);
 
   const handleStartOver = () => {
@@ -146,6 +178,7 @@ export function useQuiz() {
     error,
     era,
     handleFilter,
+    handleFindMore,
     canProceed,
     handleNext,
     handleBack,

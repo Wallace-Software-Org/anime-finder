@@ -112,11 +112,13 @@ export default function ResultsScreen({
   results,
   onStartOver,
   onFilter,
+  onFindMore,
   loading,
 }: {
   results: Recommendation[];
   onStartOver: () => void;
   onFilter: (era: string[]) => void;
+  onFindMore: () => void;
   loading: boolean;
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -144,7 +146,7 @@ export default function ResultsScreen({
   };
 
   return (
-    <div className="flex flex-col gap-6 pb-8 sm:max-w-xl">
+    <div className="flex flex-col gap-8 sm:max-w-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold">Your hidden gems</h2>
@@ -187,7 +189,7 @@ export default function ResultsScreen({
             </div>
           </div>
 
-          <div className="border-t border-border pt-4 flex gap-3">
+          <div className="border-t border-border pt-4 flex gap-4">
             <button
               onClick={handleClear}
               disabled={loading}
@@ -212,16 +214,26 @@ export default function ResultsScreen({
 
       <div className="flex flex-col gap-4">
         {results.map((rec) => (
-          <ResultCard key={rec.malId} rec={rec} />
+          <ResultCard key={rec.title} rec={rec} />
         ))}
       </div>
 
-      <button
-        onClick={onStartOver}
-        className="w-full h-12 rounded-full bg-surface border border-border text-white font-semibold hover:border-accent/40 transition-colors duration-150"
-      >
-        Start over
-      </button>
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={onFindMore}
+          disabled={loading}
+          className="w-full h-12 rounded-full bg-surface border border-border text-white font-semibold hover:border-accent/40 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Finding more…" : "Find 5 more"}
+        </button>
+
+        <button
+          onClick={onStartOver}
+          className="w-full h-12 rounded-full bg-surface border border-border text-white font-semibold hover:border-accent/40 transition-colors duration-150"
+        >
+          Start over
+        </button>
+      </div>
     </div>
   );
 }
