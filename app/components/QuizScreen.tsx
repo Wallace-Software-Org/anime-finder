@@ -20,7 +20,7 @@ export default function QuizScreen({
         )}
       </div>
       {children}
-      {nav && <div className="">{nav}</div>}
+      {nav && <div className="mt-auto">{nav}</div>}
     </div>
   );
 }
