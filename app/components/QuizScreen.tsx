@@ -15,7 +15,9 @@ export default function QuizScreen({
         <h2 className="text-2xl font-bold leading-tight text-center">
           {title}
         </h2>
-        {subtitle && <p className="mt-1 text-sm text-muted">{subtitle}</p>}
+        {subtitle && (
+          <p className="mt-1 text-sm text-muted text-center">{subtitle}</p>
+        )}
       </div>
       {children}
       {nav && <div className="">{nav}</div>}

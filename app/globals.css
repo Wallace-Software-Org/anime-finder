@@ -7,7 +7,8 @@
   --accent: #7c5cfc;
   --accent-dim: rgba(124, 92, 252, 0.18);
   --border: rgba(255, 255, 255, 0.08);
-  --muted: rgba(255, 255, 255, 0.38);
+  --muted: rgba(255, 255, 255, 0.35);
+  --subtle: rgba(255, 255, 255, 0.65);
 }
 
 @theme inline {
@@ -18,6 +19,7 @@
   --color-accent-dim: var(--accent-dim);
   --color-border: var(--border);
   --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --animate-fade-up: fade-up 0.35s ease-out both;

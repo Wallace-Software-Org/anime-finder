@@ -63,7 +63,6 @@ export default function BottomNavigation({
     >
       {showBackButton && (
         <NavigationButton onClick={onBack} disabled={loading}>
-          {/* <BackArrow /> */}
           Back
         </NavigationButton>
       )}

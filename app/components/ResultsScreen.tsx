@@ -27,7 +27,13 @@ function FilterIcon() {
 
 function ExternalLinkIcon() {
   return (
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" className="opacity-60">
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 11 11"
+      fill="none"
+      className="opacity-60"
+    >
       <path
         d="M2 9L9 2M9 2H4M9 2V7"
         stroke="currentColor"
@@ -40,7 +46,8 @@ function ExternalLinkIcon() {
 }
 
 function ResultCard({ rec }: { rec: Recommendation }) {
-  const episodeLabel = rec.episodes > 0 ? `${rec.episodes} episodes` : "Ongoing";
+  const episodeLabel =
+    rec.episodes > 0 ? `${rec.episodes} episodes` : "Ongoing";
 
   return (
     <div className="rounded-2xl bg-surface border border-border p-5 flex flex-col gap-4">
@@ -68,7 +75,9 @@ function ResultCard({ rec }: { rec: Recommendation }) {
         ) : rec.malScore != null ? (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background border border-border text-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-            <span className="text-white font-medium">MAL {rec.malScore.toFixed(1)}</span>
+            <span className="text-white font-medium">
+              MAL {rec.malScore.toFixed(1)}
+            </span>
           </span>
         ) : null}
 
@@ -91,7 +100,9 @@ function ResultCard({ rec }: { rec: Recommendation }) {
       <p className="text-white/90 text-sm leading-relaxed">{rec.whyItFits}</p>
 
       <div className="border-t border-border pt-3">
-        <p className="text-muted text-sm italic leading-relaxed">{rec.hiddenGemNote}</p>
+        <p className="text-muted text-sm italic leading-relaxed">
+          {rec.hiddenGemNote}
+        </p>
       </div>
     </div>
   );
@@ -129,7 +140,6 @@ export default function ResultsScreen({
   const handleClear = () => setSelectedEras(["any"]);
 
   const handleUpdate = () => {
-    setFilterOpen(false);
     onFilter(selectedEras);
   };
 
@@ -152,7 +162,9 @@ export default function ResultsScreen({
       {filterOpen && (
         <div className="rounded-2xl bg-surface border border-border p-5 flex flex-col gap-4">
           <div>
-            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">Era</p>
+            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
+              Era
+            </p>
             <div className="flex flex-wrap gap-2">
               {ERA_CHIPS.map((chip) => {
                 const selected = selectedEras.includes(chip.value);
@@ -160,8 +172,9 @@ export default function ResultsScreen({
                   <button
                     key={chip.value}
                     onClick={() => toggleEra(chip.value)}
+                    disabled={loading}
                     className={[
-                      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150",
+                      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
                       selected
                         ? "bg-accent/15 border-accent/50 text-white"
                         : "bg-background border-border text-muted hover:border-accent/30",
@@ -177,7 +190,8 @@ export default function ResultsScreen({
           <div className="border-t border-border pt-4 flex gap-3">
             <button
               onClick={handleClear}
-              className="px-5 h-11 rounded-full bg-surface border border-border text-white text-sm font-semibold hover:border-accent/40 transition-colors duration-150"
+              disabled={loading}
+              className="px-5 h-11 rounded-full bg-surface border border-border text-white text-sm font-semibold hover:border-accent/40 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Clear
             </button>
@@ -189,6 +203,10 @@ export default function ResultsScreen({
               {loading ? "Updating…" : "Update results"}
             </button>
           </div>
+
+          {loading && (
+            <p className="text-sm text-muted">Updating your recommendations…</p>
+          )}
         </div>
       )}
 

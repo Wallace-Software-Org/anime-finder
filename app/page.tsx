@@ -167,7 +167,7 @@ export default function Page() {
                   value={reference}
                   onChange={(e) => setReference(e.target.value)}
                   placeholder="e.g. Vinland Saga, Ping Pong the Animation..."
-                  className="min-w-xs md:min-w-sm w-full bg-surface border-0 border-b border-border text-white placeholder:text-muted/60 px-0 py-3 text-base outline-none focus:border-accent/60 transition-colors duration-150"
+                  className="min-w-xs md:min-w-sm w-full bg-surface border-0 border-b border-border text-white placeholder:text-muted/60 px-2 rounded-sm py-3 text-base outline-none focus:border-accent/60 transition-colors duration-150"
                 />
                 <p className="mt-2 text-sm text-muted">optional</p>
               </div>
