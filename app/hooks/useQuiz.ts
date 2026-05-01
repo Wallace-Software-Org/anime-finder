@@ -5,6 +5,53 @@ import type { Recommendation } from "../lib/types";
 
 export const TOTAL_STEPS = 6;
 
+async function streamRecommendations(
+  body: object,
+  onResult: (rec: Recommendation) => void
+): Promise<void> {
+  const res = await fetch("/api/recommend", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.error || "Something went wrong");
+  }
+
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        onResult(JSON.parse(trimmed) as Recommendation);
+      } catch {
+        // skip malformed lines
+      }
+    }
+  }
+
+  // flush any remaining buffered line
+  const remaining = buffer.trim();
+  if (remaining) {
+    try {
+      onResult(JSON.parse(remaining) as Recommendation);
+    } catch {
+      // ignore
+    }
+  }
+}
+
 export function useQuiz() {
   const [step, setStep] = useState(0);
   const [experience, setExperience] = useState("");
@@ -48,27 +95,20 @@ export function useQuiz() {
     }
     setLoading(true);
     setError("");
+    let navigated = false;
     try {
-      const res = await fetch("/api/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          experience,
-          mood,
-          themes,
-          commitment,
-          reference,
-          avoid,
-          era,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Something went wrong");
-      }
-      const data: Recommendation[] = await res.json();
-      setResults(data);
-      setStep(TOTAL_STEPS + 1);
+      await streamRecommendations(
+        { experience, mood, themes, commitment, reference, avoid, era },
+        (rec) => {
+          if (!navigated) {
+            setResults([rec]);
+            setStep(TOTAL_STEPS + 1);
+            navigated = true;
+          } else {
+            setResults((prev) => [...(prev ?? []), rec]);
+          }
+        },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -80,26 +120,19 @@ export function useQuiz() {
     setEra(selectedEra);
     setLoading(true);
     setError("");
+    let first = true;
     try {
-      const res = await fetch("/api/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          experience,
-          mood,
-          themes,
-          commitment,
-          reference,
-          avoid,
-          era: selectedEra,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Something went wrong");
-      }
-      const data: Recommendation[] = await res.json();
-      setResults(data);
+      await streamRecommendations(
+        { experience, mood, themes, commitment, reference, avoid, era: selectedEra },
+        (rec) => {
+          if (first) {
+            setResults([rec]);
+            first = false;
+          } else {
+            setResults((prev) => [...(prev ?? []), rec]);
+          }
+        },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -112,26 +145,12 @@ export function useQuiz() {
     setError("");
     try {
       const exclude = results?.map((r) => r.title) ?? [];
-      const res = await fetch("/api/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          experience,
-          mood,
-          themes,
-          commitment,
-          reference,
-          avoid,
-          era,
-          exclude,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || "Something went wrong");
-      }
-      const data: Recommendation[] = await res.json();
-      setResults((prev) => [...(prev ?? []), ...data]);
+      await streamRecommendations(
+        { experience, mood, themes, commitment, reference, avoid, era, exclude },
+        (rec) => {
+          setResults((prev) => [...(prev ?? []), rec]);
+        },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {

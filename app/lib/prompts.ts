@@ -17,8 +17,8 @@ Rules:
 - Respect the MAL member count ceiling specified by the experience level instruction — this is the most important constraint
 - Never recommend shows that violate the member count ceiling
 - Prefer works that genuinely match the taste profile over well-known defaults
-- Return ONLY valid JSON — no markdown fences, no explanation, no preamble, no trailing text
-- The JSON must be an array of exactly 5 objects
+- Return ONLY valid NDJSON — one complete JSON object per line, no markdown fences, no explanation, no preamble, no trailing text
+- Output exactly 5 lines, each a self-contained JSON object
 
 Each object must have these exact fields:
 - "title": string — the most common English title

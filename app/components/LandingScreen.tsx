@@ -6,9 +6,7 @@ export default function LandingScreen({ onStart }: { onStart: () => void }) {
       </div>
       <div className="space-y-3">
         <h1 className="text-3xl font-bold leading-tight tracking-tight">
-          Anime you have never heard of.
-          <br />
-          You will love it.
+          Find your next Anime
         </h1>
         <p className="text-muted text-base max-w-xs mx-auto">
           Answer five questions. Get five hidden gems matched to your taste.

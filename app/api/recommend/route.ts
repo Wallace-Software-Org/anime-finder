@@ -92,7 +92,7 @@ async function enrichAnime(anime: AnimeResult): Promise<EnrichedAnime> {
 
 export async function POST(request: Request) {
   try {
-    const { experience, mood, themes, commitment, reference, avoid, era = ["any"], exclude = [] } =
+    const { experience, mood, themes, commitment, reference, avoid, era = ['any'], exclude = [] } =
       await request.json()
 
     const userMessage = buildUserMessage({
@@ -106,41 +106,73 @@ export async function POST(request: Request) {
       exclude,
     })
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2048,
-      system: [
-        {
-          type: 'text',
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [{ role: 'user', content: userMessage }],
+    const encoder = new TextEncoder()
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const anthropicStream = anthropic.messages.stream({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 2048,
+            system: [
+              {
+                type: 'text',
+                text: SYSTEM_PROMPT,
+                cache_control: { type: 'ephemeral' },
+              },
+            ],
+            messages: [{ role: 'user', content: userMessage }],
+          })
+
+          let buffer = ''
+
+          for await (const event of anthropicStream) {
+            if (
+              event.type === 'content_block_delta' &&
+              event.delta.type === 'text_delta'
+            ) {
+              buffer += event.delta.text
+              const newlineIdx = buffer.lastIndexOf('\n')
+              if (newlineIdx !== -1) {
+                const completeText = buffer.slice(0, newlineIdx)
+                buffer = buffer.slice(newlineIdx + 1)
+                for (const line of completeText.split('\n')) {
+                  const trimmed = line.trim()
+                  if (!trimmed) continue
+                  try {
+                    const anime = JSON.parse(trimmed) as AnimeResult
+                    const enriched = await enrichAnime(anime)
+                    controller.enqueue(encoder.encode(JSON.stringify(enriched) + '\n'))
+                  } catch {
+                    // skip malformed lines
+                  }
+                }
+              }
+            }
+          }
+
+          // flush any remaining buffered line
+          const remaining = buffer.trim()
+          if (remaining) {
+            try {
+              const anime = JSON.parse(remaining) as AnimeResult
+              const enriched = await enrichAnime(anime)
+              controller.enqueue(encoder.encode(JSON.stringify(enriched) + '\n'))
+            } catch {
+              // ignore
+            }
+          }
+
+          controller.close()
+        } catch (err) {
+          controller.error(err)
+        }
+      },
     })
 
-    const block = message.content[0]
-    if (block.type !== 'text') {
-      return Response.json({ error: 'Unexpected model response' }, { status: 500 })
-    }
-
-    let animeList: AnimeResult[]
-    try {
-      let text = block.text.trim()
-      const fenceMatch = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/)
-      if (fenceMatch) text = fenceMatch[1].trim()
-      animeList = JSON.parse(text)
-    } catch {
-      return Response.json({ error: 'Failed to parse model response' }, { status: 500 })
-    }
-
-    if (!Array.isArray(animeList) || animeList.length === 0) {
-      return Response.json({ error: 'No recommendations returned' }, { status: 500 })
-    }
-
-    const enriched = await Promise.all(animeList.map(enrichAnime))
-
-    return Response.json(enriched)
+    return new Response(stream, {
+      headers: { 'Content-Type': 'application/x-ndjson' },
+    })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error'
     return Response.json({ error: message }, { status: 500 })
