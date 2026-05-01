@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HiddenPick — Anime you've never heard of. You'll love it.",
+  title: "AniMatch — Find your next anime",
   description:
-    "Answer five questions. Get five hidden gem anime matched to your taste.",
+    "Answer a few questions. Get hidden gem anime recommendations matched to your exact taste.",
 };
 
 export default function RootLayout({
