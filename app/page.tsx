@@ -45,45 +45,34 @@ export default function Page() {
     isResults,
   } = useQuiz();
 
-  const quizNav = (
-    <BottomNavigation
-      step={step}
-      totalSteps={TOTAL_STEPS}
-      canProceed={canProceed()}
-      loading={loading}
-      onBack={handleBack}
-      onNext={handleNext}
-    />
-  );
-
   return (
-    <div className="bg-background text-white flex flex-col justify-start h-full grow">
+    <div className="bg-background text-white flex flex-col min-h-screen">
       <Header
         isQuiz={isQuiz}
         step={step}
         totalSteps={TOTAL_STEPS}
         onLogoClick={handleStartOver}
       />
-      {isQuiz && (
-        <ProgressBar
-          step={step}
-          totalSteps={TOTAL_STEPS}
-          onGoToStep={goToStep}
-        />
-      )}
 
-      <main className="flex flex-col overflow-hidden items-center justify-center h-full pt-12 pb-0 md:pt-16 lg:pt-24">
+      <main className="flex flex-col flex-1 overflow-hidden pt-20">
+        {isQuiz && (
+          <ProgressBar
+            step={step}
+            totalSteps={TOTAL_STEPS}
+            onGoToStep={goToStep}
+          />
+        )}
         <div
           key={step}
           className={[
-            "flex flex-col flex-1 px-6 pt-10 md:pt-14 pb-8 h-min animate-fade-up",
-            isResults ? "overflow-y-auto" : "",
+            "flex flex-col flex-1 items-center px-6 pt-6 md:pt-10 animate-fade-up",
+            isResults ? "overflow-y-auto" : "overflow-hidden",
           ].join(" ")}
         >
           {step === 0 && <LandingScreen onStart={() => handleNext()} />}
 
           {step === 1 && (
-            <QuizScreen title="How deep are you into anime?" nav={quizNav}>
+            <QuizScreen title="How deep are you into anime?">
               <div className="flex flex-col gap-3">
                 {EXPERIENCE_OPTIONS.map((opt) => (
                   <OptionPill
@@ -99,10 +88,7 @@ export default function Page() {
           )}
 
           {step === 2 && (
-            <QuizScreen
-              title="What kind of ride are you looking for?"
-              nav={quizNav}
-            >
+            <QuizScreen title="What kind of ride are you looking for?">
               <div className="flex flex-col gap-3">
                 {MOOD_OPTIONS.map((opt) => (
                   <OptionPill
@@ -121,7 +107,6 @@ export default function Page() {
             <QuizScreen
               title="What should it be about at its core?"
               subtitle="Pick up to 2"
-              nav={quizNav}
             >
               <div className="flex flex-col gap-3">
                 {THEME_OPTIONS.map((opt) => (
@@ -138,10 +123,7 @@ export default function Page() {
           )}
 
           {step === 4 && (
-            <QuizScreen
-              title="How much are you willing to commit?"
-              nav={quizNav}
-            >
+            <QuizScreen title="How much are you willing to commit?">
               <div className="flex flex-col gap-3">
                 {COMMITMENT_OPTIONS.map((opt) => (
                   <OptionPill
@@ -160,7 +142,6 @@ export default function Page() {
             <QuizScreen
               title="What show do you want to find something like?"
               subtitle="Give us a reference and we will find hidden gems with the same soul"
-              nav={quizNav}
             >
               <div className="mt-2">
                 <input
@@ -176,7 +157,7 @@ export default function Page() {
           )}
 
           {step === 6 && (
-            <QuizScreen title="Anything you want to avoid?" nav={quizNav}>
+            <QuizScreen title="Anything you want to avoid?">
               <div className="flex flex-col gap-3">
                 {AVOID_OPTIONS.map((opt) => (
                   <OptionPill
@@ -203,6 +184,19 @@ export default function Page() {
 
           {error && <p className="mt-4 text-red-400 text-sm">{error}</p>}
         </div>
+
+        {isQuiz && (
+          <div className="shrink-0 px-6 pb-8 pt-3">
+            <BottomNavigation
+              step={step}
+              totalSteps={TOTAL_STEPS}
+              canProceed={canProceed()}
+              loading={loading}
+              onBack={handleBack}
+              onNext={handleNext}
+            />
+          </div>
+        )}
       </main>
     </div>
   );
