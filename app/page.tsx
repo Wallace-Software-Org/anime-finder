@@ -6,6 +6,7 @@ import QuizScreen from "./components/QuizScreen";
 import BottomNavigation from "./components/BottomNavigation";
 import OptionPill from "./components/OptionPill";
 import LandingScreen from "./components/LandingScreen";
+import LoadingScreen from "./components/LoadingScreen";
 import ResultsScreen from "./components/ResultsScreen";
 import { useQuiz, TOTAL_STEPS } from "./hooks/useQuiz";
 import {
@@ -50,7 +51,7 @@ export default function Page() {
       />
 
       <main className="flex flex-col flex-1 overflow-hidden pt-20 pb-6  min-h-svh">
-        {isQuiz && (
+        {isQuiz && !loading && (
           <ProgressBar
             step={step}
             totalSteps={TOTAL_STEPS}
@@ -117,7 +118,7 @@ export default function Page() {
             </QuizScreen>
           )}
 
-          {step === 4 && (
+          {step === 4 && !loading && (
             <QuizScreen title="How much are you willing to commit?">
               <div className="flex flex-col gap-3">
                 {COMMITMENT_OPTIONS.map((opt) => (
@@ -133,6 +134,8 @@ export default function Page() {
             </QuizScreen>
           )}
 
+          {loading && step === TOTAL_STEPS && <LoadingScreen />}
+
           {isResults && results && (
             <ResultsScreen
               results={results}
@@ -147,7 +150,7 @@ export default function Page() {
           {error && <p className="mt-4 text-red-400 text-sm">{error}</p>}
         </div>
 
-        {isQuiz && (
+        {isQuiz && !loading && (
           <div className="shrink-0 px-6 pt-6">
             <BottomNavigation
               step={step}
