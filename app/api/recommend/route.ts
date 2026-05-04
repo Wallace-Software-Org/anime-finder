@@ -1,6 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { SYSTEM_PROMPT, buildUserMessage } from '../../lib/prompts'
-import type { MALAnime } from '../../lib/types'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -21,56 +20,27 @@ interface EnrichedAnime extends AnimeResult {
   anilistId: number | null
 }
 
-interface EnrichedAnimeWithMeta extends EnrichedAnime {
-  malEpisodes: number | null
-  malMediaType: string | null
-}
-
-interface RejectedAnime {
+async function fetchMALData(
   title: string
-  realMediaType: string | null
-  realEpisodes: number | null
-}
-
-async function fetchMALData(title: string): Promise<MALAnime> {
+): Promise<{ score: number | null; id: number | null }> {
   const clientId = process.env.MAL_CLIENT_ID
-  if (!clientId) return { score: null, id: null, episodes: null }
+  if (!clientId) return { score: null, id: null }
 
   try {
     const res = await fetch(
-      `https://api.myanimelist.net/v2/anime?q=${encodeURIComponent(title)}&limit=1&fields=mean,num_episodes,media_type`,
+      `https://api.myanimelist.net/v2/anime?q=${encodeURIComponent(title)}&limit=1&fields=mean`,
       { headers: { 'X-MAL-Client-ID': clientId } }
     )
-    if (!res.ok) return { score: null, id: null, episodes: null }
+    if (!res.ok) return { score: null, id: null }
     const data = await res.json()
     const node = data?.data?.[0]?.node
-    if (!node) return { score: null, id: null, episodes: null }
+    if (!node) return { score: null, id: null }
     return {
       score: typeof node.mean === 'number' ? node.mean : null,
       id: typeof node.id === 'number' ? node.id : null,
-      episodes: typeof node.num_episodes === 'number' ? node.num_episodes : null,
-      media_type: typeof node.media_type === 'string' ? node.media_type : undefined,
     }
   } catch {
-    return { score: null, id: null, episodes: null }
-  }
-}
-
-function validateCommitment(
-  commitment: string,
-  episodes: number | null,
-  mediaType: string | null
-): boolean {
-  switch (commitment) {
-    case 'movie':
-      return mediaType === 'movie'
-    case 'short':
-      return mediaType === 'tv' && episodes !== null && episodes >= 12 && episodes <= 52
-    case 'standard':
-      return mediaType === 'tv' && episodes !== null && episodes >= 36 && episodes <= 130
-    case 'any':
-    default:
-      return true
+    return { score: null, id: null }
   }
 }
 
@@ -106,7 +76,7 @@ async function fetchAniListData(
   }
 }
 
-async function enrichAnime(anime: AnimeResult): Promise<EnrichedAnimeWithMeta> {
+async function enrichAnime(anime: AnimeResult): Promise<EnrichedAnime> {
   const [mal, anilist] = await Promise.all([
     fetchMALData(anime.title),
     fetchAniListData(anime.title),
@@ -115,34 +85,9 @@ async function enrichAnime(anime: AnimeResult): Promise<EnrichedAnimeWithMeta> {
     ...anime,
     malId: mal.id,
     malScore: mal.score,
-    malEpisodes: mal.episodes ?? null,
-    malMediaType: mal.media_type ?? null,
     anilistScore: anilist.score,
     anilistId: anilist.id,
   }
-}
-
-async function* streamLines(
-  params: Parameters<typeof anthropic.messages.stream>[0]
-): AsyncGenerator<string> {
-  const s = anthropic.messages.stream(params)
-  let buffer = ''
-  for await (const event of s) {
-    if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-      buffer += event.delta.text
-      const newlineIdx = buffer.lastIndexOf('\n')
-      if (newlineIdx !== -1) {
-        const completeText = buffer.slice(0, newlineIdx)
-        buffer = buffer.slice(newlineIdx + 1)
-        for (const line of completeText.split('\n')) {
-          const trimmed = line.trim()
-          if (trimmed) yield trimmed
-        }
-      }
-    }
-  }
-  const remaining = buffer.trim()
-  if (remaining) yield remaining
 }
 
 export async function POST(request: Request) {
@@ -160,61 +105,59 @@ export async function POST(request: Request) {
     })
 
     const encoder = new TextEncoder()
-    const claudeParams = {
-      model: 'claude-haiku-4-5-20251001' as const,
-      max_tokens: 2048,
-      system: [{ type: 'text' as const, text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' as const } }],
-    }
 
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          const accepted: string[] = []
-          const rejected: RejectedAnime[] = []
+          const anthropicStream = anthropic.messages.stream({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 2048,
+            system: [
+              {
+                type: 'text',
+                text: SYSTEM_PROMPT,
+                cache_control: { type: 'ephemeral' },
+              },
+            ],
+            messages: [{ role: 'user', content: userMessage }],
+          })
 
-          for await (const line of streamLines({ ...claudeParams, messages: [{ role: 'user', content: userMessage }] })) {
-            try {
-              const anime = JSON.parse(line) as AnimeResult
-              const enriched = await enrichAnime(anime)
-              if (validateCommitment(commitment, enriched.malEpisodes, enriched.malMediaType)) {
-                const { malEpisodes: _ep, malMediaType: _mt, ...clientAnime } = enriched
-                controller.enqueue(encoder.encode(JSON.stringify(clientAnime) + '\n'))
-                accepted.push(anime.title)
-              } else {
-                rejected.push({
-                  title: anime.title,
-                  realMediaType: enriched.malMediaType,
-                  realEpisodes: enriched.malEpisodes,
-                })
+          let buffer = ''
+
+          for await (const event of anthropicStream) {
+            if (
+              event.type === 'content_block_delta' &&
+              event.delta.type === 'text_delta'
+            ) {
+              buffer += event.delta.text
+              const newlineIdx = buffer.lastIndexOf('\n')
+              if (newlineIdx !== -1) {
+                const completeText = buffer.slice(0, newlineIdx)
+                buffer = buffer.slice(newlineIdx + 1)
+                for (const line of completeText.split('\n')) {
+                  const trimmed = line.trim()
+                  if (!trimmed) continue
+                  try {
+                    const anime = JSON.parse(trimmed) as AnimeResult
+                    const enriched = await enrichAnime(anime)
+                    controller.enqueue(encoder.encode(JSON.stringify(enriched) + '\n'))
+                  } catch {
+                    // skip malformed lines
+                  }
+                }
               }
-            } catch {
-              // skip malformed lines
             }
           }
 
-          if (rejected.length > 0) {
-            const retryMessage = [
-              userMessage,
-              ``,
-              `CORRECTION: The following ${rejected.length} recommendation(s) were rejected because they do not match the selected commitment. Provide exactly ${rejected.length} replacement(s):`,
-              ...rejected.map(r =>
-                `- "${r.title}" rejected (actual media_type: ${r.realMediaType ?? 'unknown'}, actual episodes: ${r.realEpisodes ?? 'unknown'})`
-              ),
-              `Do not suggest these already-accepted titles: ${accepted.join(', ')}`,
-              `Output exactly ${rejected.length} NDJSON lines.`,
-            ].join('\n')
-
-            for await (const line of streamLines({ ...claudeParams, messages: [{ role: 'user', content: retryMessage }] })) {
-              try {
-                const anime = JSON.parse(line) as AnimeResult
-                const enriched = await enrichAnime(anime)
-                if (validateCommitment(commitment, enriched.malEpisodes, enriched.malMediaType)) {
-                  const { malEpisodes: _ep, malMediaType: _mt, ...clientAnime } = enriched
-                  controller.enqueue(encoder.encode(JSON.stringify(clientAnime) + '\n'))
-                }
-              } catch {
-                // skip malformed lines
-              }
+          // flush any remaining buffered line
+          const remaining = buffer.trim()
+          if (remaining) {
+            try {
+              const anime = JSON.parse(remaining) as AnimeResult
+              const enriched = await enrichAnime(anime)
+              controller.enqueue(encoder.encode(JSON.stringify(enriched) + '\n'))
+            } catch {
+              // ignore
             }
           }
 

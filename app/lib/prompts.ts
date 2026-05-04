@@ -1,10 +1,3 @@
-export const COMMITMENT_MAP: Record<string, string> = {
-  short: "1 to 2 seasons, roughly 12 to 52 episodes, TV series only",
-  standard: "3 to 5 seasons, roughly 36 to 130 episodes, TV series only",
-  movie: "anime films only, single feature length entries, not TV series or OVAs",
-  any: "any format and any length — films, short series, or long runners are all valid, no restrictions",
-};
-
 export const EXPERIENCE_MAP: Record<string, string> = {
   beginner:
     "mainstream shows are fine, include popular well-known titles",
@@ -65,13 +58,13 @@ export function buildUserMessage({
 
   parts.push(
     ``,
-    `HARD CONSTRAINT — EPISODES & FORMAT: You must verify both the episode count and format before recommending any show. Apply these exact rules with zero exceptions:`,
-    `- short: TV series only, 1 to 2 seasons, roughly 12 to 52 episodes total`,
-    `- standard: TV series only, 3 to 5 seasons, roughly 36 to 130 episodes total`,
-    `- movie: Anime films only, single feature-length entries — not TV series or OVAs`,
-    `- any: No format or episode restrictions — films, short series, and long runners are all valid`,
-    `If a show does not match the selected commitment's format and episode range it is disqualified. Do not recommend it regardless of how well it matches other criteria.`,
-    `Selected commitment: ${commitment} — ${COMMITMENT_MAP[commitment] ?? commitment}`,
+    `HARD CONSTRAINT — EPISODES: You must verify the episode count before recommending any show. Apply these exact numeric rules with zero exceptions:`,
+    `- short: must be fewer than 15 episodes total`,
+    `- standard: must be between 13 and 52 episodes total`,
+    `- long: must be over 50 episodes total`,
+    `- any: no restriction`,
+    `If a show does not meet this exact episode range it is disqualified. Do not recommend it regardless of how well it matches other criteria.`,
+    `Selected episode commitment: ${commitment}`,
   );
 
   const eraConstraint =
