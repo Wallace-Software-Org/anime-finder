@@ -63,8 +63,9 @@ export default function LandingScreen({ onStart }: { onStart: () => void }) {
         </p>
       </div>
       <button
+        type="button"
         onClick={onStart}
-        className="z-50 mt-4 w-full max-w-xs h-12 rounded-full bg-surface border border-border text-white font-semibold hover:border-accent/40 transition-colors duration-150"
+        className="relative z-10 mt-4 w-full max-w-xs h-12 rounded-full bg-surface border border-border text-white font-semibold hover:border-accent/40 transition-colors duration-150 touch-manipulation"
       >
         Find my anime
       </button>

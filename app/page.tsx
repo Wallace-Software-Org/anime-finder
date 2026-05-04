@@ -54,7 +54,7 @@ export default function Page() {
         onLogoClick={handleStartOver}
       />
 
-      <main className="flex flex-col flex-1 overflow-hidden pt-20">
+      <main className="flex flex-col flex-1 overflow-hidden pt-20 pb-8  min-h-svh">
         {isQuiz && (
           <ProgressBar
             step={step}
@@ -186,7 +186,7 @@ export default function Page() {
         </div>
 
         {isQuiz && (
-          <div className="shrink-0 px-6 py-8">
+          <div className="shrink-0 px-6 pt-6">
             <BottomNavigation
               step={step}
               totalSteps={TOTAL_STEPS}
