@@ -6,7 +6,6 @@ import type {
   EraValue,
   FilterChipOption,
   Recommendation,
-  ResultsCommitmentValue,
 } from "../lib/types";
 
 const ERA_CHIPS: FilterChipOption<EraValue>[] = [
@@ -18,12 +17,6 @@ const ERA_CHIPS: FilterChipOption<EraValue>[] = [
   { label: "Any era", value: "any" },
 ];
 
-const COMMITMENT_CHIPS: FilterChipOption<ResultsCommitmentValue>[] = [
-  { label: "Quick watch", value: "short" },
-  { label: "Committed", value: "standard" },
-  { label: "Movie only", value: "movie" },
-  { label: "Anything goes", value: "any" },
-];
 
 function FilterIcon() {
   return (
@@ -63,8 +56,6 @@ function FilterPanel({
   loading,
   selectedEras,
   onToggleEra,
-  selectedCommitment,
-  onSelectCommitment,
   onClear,
   onUpdate,
 }: {
@@ -72,8 +63,6 @@ function FilterPanel({
   loading: boolean;
   selectedEras: EraValue[];
   onToggleEra: (value: EraValue) => void;
-  selectedCommitment: CommitmentValue | "";
-  onSelectCommitment: (value: ResultsCommitmentValue) => void;
   onClear: () => void;
   onUpdate: () => void;
 }) {
@@ -96,32 +85,6 @@ function FilterPanel({
                   <button
                     key={chip.value}
                     onClick={() => onToggleEra(chip.value)}
-                    disabled={loading}
-                    className={[
-                      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
-                      selected
-                        ? "bg-accent/15 border-accent/50 text-white"
-                        : "bg-background border-border text-muted hover:border-accent/30",
-                    ].join(" ")}
-                  >
-                    {chip.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
-              Commitment
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {COMMITMENT_CHIPS.map((chip) => {
-                const selected = selectedCommitment === chip.value;
-                return (
-                  <button
-                    key={chip.value}
-                    onClick={() => onSelectCommitment(chip.value)}
                     disabled={loading}
                     className={[
                       "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
@@ -244,8 +207,7 @@ export default function ResultsScreen({
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedEras, setSelectedEras] = useState<EraValue[]>(["any"]);
-  const [selectedCommitment, setSelectedCommitment] =
-    useState(initialCommitment);
+  const [selectedCommitment] = useState(initialCommitment);
   const wasLoading = useRef(false);
 
   useEffect(() => {
@@ -291,12 +253,7 @@ export default function ResultsScreen({
         loading={loading}
         selectedEras={selectedEras}
         onToggleEra={toggleEra}
-        selectedCommitment={selectedCommitment}
-        onSelectCommitment={setSelectedCommitment}
-        onClear={() => {
-          setSelectedEras(["any"]);
-          setSelectedCommitment(initialCommitment);
-        }}
+        onClear={() => setSelectedEras(["any"])}
         onUpdate={() => onFilter(selectedEras, selectedCommitment)}
       />
 
