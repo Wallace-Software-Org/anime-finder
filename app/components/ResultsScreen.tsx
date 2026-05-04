@@ -274,7 +274,7 @@ export default function ResultsScreen({
     <div className="flex flex-col sm:max-w-xl">
       <div className="flex items-start justify-between gap-4 pb-8">
         <div>
-          <h2 className="text-2xl font-bold">Your hidden gems</h2>
+          <h2 className="text-2xl font-bold">Your next binge</h2>
           <p className="text-sm text-muted mt-1">Picked for your taste</p>
         </div>
         <button

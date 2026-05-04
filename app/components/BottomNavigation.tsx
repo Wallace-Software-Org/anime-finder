@@ -35,7 +35,7 @@ export default function BottomNavigation({
             : "bg-surface border border-border text-muted cursor-not-allowed opacity-50",
         ].join(" ")}
       >
-        {loading ? "Finding your gems…" : isLast ? "Find my anime" : "Next"}
+        {loading ? "Finding bangers…" : isLast ? "Find my anime" : "Next"}
       </button>
     </div>
   );
