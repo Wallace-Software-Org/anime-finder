@@ -54,7 +54,6 @@ export function buildUserMessage({
     `- Experience level instruction: ${experienceInstruction}`,
     `- Mood: ${mood}`,
     `- Core themes: ${themes.join(", ")}`,
-    `- Episode commitment: ${commitment}`,
   ];
 
   if (reference?.trim()) {
@@ -63,12 +62,38 @@ export function buildUserMessage({
   if (avoid.length > 0) {
     parts.push(`- Things to avoid: ${avoid.join(", ")}`);
   }
-  if (!era.includes("any") && era.length > 0) {
-    parts.push(`- Era restriction: only recommend anime that first aired in: ${era.join(", ")}`);
-  }
   if (exclude.length > 0) {
     parts.push(`- Do not recommend any of these titles: ${exclude.join(", ")}`);
   }
+
+  parts.push(
+    ``,
+    `HARD CONSTRAINT — EPISODES: You must verify the episode count before recommending any show. Apply these exact numeric rules with zero exceptions:`,
+    `- short: must be fewer than 15 episodes total`,
+    `- standard: must be between 13 and 52 episodes total`,
+    `- long: must be over 50 episodes total`,
+    `- any: no restriction`,
+    `If a show does not meet this exact episode range it is disqualified. Do not recommend it regardless of how well it matches other criteria.`,
+    `Selected episode commitment: ${commitment}`,
+  );
+
+  const eraConstraint =
+    !era.includes("any") && era.length > 0
+      ? era.join(", ")
+      : "any (no restriction)";
+
+  parts.push(
+    ``,
+    `HARD CONSTRAINT — ERA: You must verify the air date before recommending any show. Apply these exact year rules with zero exceptions:`,
+    `- Before 1990: must have started airing before 1990`,
+    `- 1990s: must have started airing between 1990 and 1999`,
+    `- 2000s: must have started airing between 2000 and 2009`,
+    `- 2010s: must have started airing between 2010 and 2019`,
+    `- 2020s: must have started airing between 2020 and 2029`,
+    `- any: no restriction`,
+    `If a show does not meet the selected era it is disqualified regardless of how well it matches other criteria. Multiple eras can be selected — the show must fall within at least one of them.`,
+    `Selected era: ${eraConstraint}`,
+  );
 
   return parts.join("\n");
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Recommendation } from "../lib/types";
 
 const ERA_CHIPS = [
@@ -42,6 +42,82 @@ function ExternalLinkIcon() {
         strokeLinejoin="round"
       />
     </svg>
+  );
+}
+
+function FilterPanel({
+  open,
+  loading,
+  selectedEras,
+  onToggleEra,
+  onClear,
+  onUpdate,
+}: {
+  open: boolean;
+  loading: boolean;
+  selectedEras: string[];
+  onToggleEra: (value: string) => void;
+  onClear: () => void;
+  onUpdate: () => void;
+}) {
+  return (
+    <div
+      className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+      }`}
+    >
+      <div className="overflow-hidden min-h-0">
+        <div className="rounded-2xl bg-surface border border-border p-5 flex flex-col gap-4">
+          <div>
+            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
+              Era
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {ERA_CHIPS.map((chip) => {
+                const selected = selectedEras.includes(chip.value);
+                return (
+                  <button
+                    key={chip.value}
+                    onClick={() => onToggleEra(chip.value)}
+                    disabled={loading}
+                    className={[
+                      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
+                      selected
+                        ? "bg-accent/15 border-accent/50 text-white"
+                        : "bg-background border-border text-muted hover:border-accent/30",
+                    ].join(" ")}
+                  >
+                    {chip.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="border-t border-border pt-4 flex gap-4">
+            <button
+              onClick={onClear}
+              disabled={loading}
+              className="px-5 h-11 rounded-full bg-surface border border-border text-white text-sm font-semibold hover:border-accent/40 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Clear
+            </button>
+            <button
+              onClick={onUpdate}
+              disabled={loading}
+              className="flex-1 h-11 rounded-full bg-surface border border-border text-white text-sm font-semibold hover:border-accent/40 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Updating…" : "Update results"}
+            </button>
+          </div>
+
+          {loading && (
+            <p className="text-sm text-muted">Updating your recommendations…</p>
+          )}
+        </div>
+        <div className="h-8" />
+      </div>
+    </div>
   );
 }
 
@@ -123,6 +199,14 @@ export default function ResultsScreen({
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedEras, setSelectedEras] = useState<string[]>(["any"]);
+  const wasLoading = useRef(false);
+
+  useEffect(() => {
+    if (wasLoading.current && !loading) {
+      setFilterOpen(false);
+    }
+    wasLoading.current = loading;
+  }, [loading]);
 
   const toggleEra = (value: string) => {
     if (value === "any") {
@@ -139,15 +223,9 @@ export default function ResultsScreen({
     });
   };
 
-  const handleClear = () => setSelectedEras(["any"]);
-
-  const handleUpdate = () => {
-    onFilter(selectedEras);
-  };
-
   return (
-    <div className="flex flex-col gap-8 sm:max-w-xl">
-      <div className="flex items-start justify-between gap-4">
+    <div className="flex flex-col sm:max-w-xl">
+      <div className="flex items-start justify-between gap-4 pb-8">
         <div>
           <h2 className="text-2xl font-bold">Your hidden gems</h2>
           <p className="text-sm text-muted mt-1">Picked for your taste</p>
@@ -161,58 +239,16 @@ export default function ResultsScreen({
         </button>
       </div>
 
-      {filterOpen && (
-        <div className="rounded-2xl bg-surface border border-border p-5 flex flex-col gap-4">
-          <div>
-            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
-              Era
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {ERA_CHIPS.map((chip) => {
-                const selected = selectedEras.includes(chip.value);
-                return (
-                  <button
-                    key={chip.value}
-                    onClick={() => toggleEra(chip.value)}
-                    disabled={loading}
-                    className={[
-                      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
-                      selected
-                        ? "bg-accent/15 border-accent/50 text-white"
-                        : "bg-background border-border text-muted hover:border-accent/30",
-                    ].join(" ")}
-                  >
-                    {chip.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+      <FilterPanel
+        open={filterOpen}
+        loading={loading}
+        selectedEras={selectedEras}
+        onToggleEra={toggleEra}
+        onClear={() => setSelectedEras(["any"])}
+        onUpdate={() => onFilter(selectedEras)}
+      />
 
-          <div className="border-t border-border pt-4 flex gap-4">
-            <button
-              onClick={handleClear}
-              disabled={loading}
-              className="px-5 h-11 rounded-full bg-surface border border-border text-white text-sm font-semibold hover:border-accent/40 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Clear
-            </button>
-            <button
-              onClick={handleUpdate}
-              disabled={loading}
-              className="flex-1 h-11 rounded-full bg-surface border border-border text-white text-sm font-semibold hover:border-accent/40 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Updating…" : "Update results"}
-            </button>
-          </div>
-
-          {loading && (
-            <p className="text-sm text-muted">Updating your recommendations…</p>
-          )}
-        </div>
-      )}
-
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 pb-8">
         {results.map((rec) => (
           <ResultCard key={rec.title} rec={rec} />
         ))}

@@ -54,7 +54,7 @@ export default function Page() {
         onLogoClick={handleStartOver}
       />
 
-      <main className="flex flex-col flex-1 overflow-hidden pt-20 pb-8  min-h-svh">
+      <main className="flex flex-col flex-1 overflow-hidden pt-20 pb-6  min-h-svh">
         {isQuiz && (
           <ProgressBar
             step={step}
