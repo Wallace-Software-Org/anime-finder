@@ -51,15 +51,3 @@ export const COMMITMENT_OPTIONS = [
   { emoji: "✨", label: "Anything goes", value: "any" },
 ];
 
-export const AVOID_OPTIONS = [
-  { emoji: "😴", label: "Long filler arcs", value: "long-filler-arcs" },
-  {
-    emoji: "💪",
-    label: "Overpowered main character",
-    value: "overpowered-main-character",
-  },
-  { emoji: "🙈", label: "Heavy fan service", value: "heavy-fan-service" },
-  { emoji: "🐢", label: "Too slow a pace", value: "too-slow-a-pace" },
-  { emoji: "😤", label: "Incomplete ending", value: "incomplete-ending" },
-  { emoji: "💘", label: "Heavy romance", value: "heavy-romance" },
-];

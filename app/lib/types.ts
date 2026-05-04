@@ -12,8 +12,6 @@ export interface QuizAnswers {
   mood: string;
   themes: string[];
   commitment: Commitment | "";
-  reference: string;
-  avoid: string[];
 }
 
 export interface MALAnime {

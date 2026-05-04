@@ -147,7 +147,7 @@ async function* streamLines(
 
 export async function POST(request: Request) {
   try {
-    const { experience, mood, themes, commitment, reference, avoid, era = ['any'], exclude = [] } =
+    const { experience, mood, themes, commitment, era = ['any'], exclude = [] } =
       await request.json()
 
     const userMessage = buildUserMessage({
@@ -155,8 +155,6 @@ export async function POST(request: Request) {
       mood,
       themes,
       commitment,
-      reference,
-      avoid,
       era,
       exclude,
     })

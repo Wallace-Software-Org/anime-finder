@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Recommendation } from "../lib/types";
 
-export const TOTAL_STEPS = 6;
+export const TOTAL_STEPS = 4;
 
 async function streamRecommendations(
   body: object,
@@ -58,14 +58,12 @@ export function useQuiz() {
   const [mood, setMood] = useState("");
   const [themes, setThemes] = useState<string[]>([]);
   const [commitment, setCommitment] = useState("");
-  const [reference, setReference] = useState("");
-  const [avoid, setAvoid] = useState<string[]>([]);
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [era, setEra] = useState<string[]>(["any"]);
 
-  // q1=experience, q2=mood, q3=themes, q4=commitment, q5=reference, q6=avoid
+  // q1=experience, q2=mood, q3=themes, q4=commitment
   const canProceed = () => {
     if (step === 1) return experience !== "";
     if (step === 2) return mood !== "";
@@ -83,11 +81,6 @@ export function useQuiz() {
           : prev,
     );
 
-  const toggleAvoid = (value: string) =>
-    setAvoid((prev) =>
-      prev.includes(value) ? prev.filter((a) => a !== value) : [...prev, value],
-    );
-
   const handleNext = async () => {
     if (step < TOTAL_STEPS) {
       setStep((s) => s + 1);
@@ -98,7 +91,7 @@ export function useQuiz() {
     let navigated = false;
     try {
       await streamRecommendations(
-        { experience, mood, themes, commitment, reference, avoid, era },
+        { experience, mood, themes, commitment, era },
         (rec) => {
           if (!navigated) {
             setResults([rec]);
@@ -116,14 +109,14 @@ export function useQuiz() {
     }
   };
 
-  const handleFilter = async (selectedEra: string[]) => {
+  const handleFilter = async (selectedEra: string[], selectedCommitment: string) => {
     setEra(selectedEra);
     setLoading(true);
     setError("");
     let first = true;
     try {
       await streamRecommendations(
-        { experience, mood, themes, commitment, reference, avoid, era: selectedEra },
+        { experience, mood, themes, commitment: selectedCommitment, era: selectedEra },
         (rec) => {
           if (first) {
             setResults([rec]);
@@ -146,7 +139,7 @@ export function useQuiz() {
     try {
       const exclude = results?.map((r) => r.title) ?? [];
       await streamRecommendations(
-        { experience, mood, themes, commitment, reference, avoid, era, exclude },
+        { experience, mood, themes, commitment, era, exclude },
         (rec) => {
           setResults((prev) => [...(prev ?? []), rec]);
         },
@@ -166,8 +159,6 @@ export function useQuiz() {
     setMood("");
     setThemes([]);
     setCommitment("");
-    setReference("");
-    setAvoid([]);
     setResults(null);
     setError("");
     setEra(["any"]);
@@ -188,10 +179,6 @@ export function useQuiz() {
     toggleTheme,
     commitment,
     setCommitment,
-    reference,
-    setReference,
-    avoid,
-    toggleAvoid,
     results,
     loading,
     error,

@@ -12,6 +12,13 @@ const ERA_CHIPS = [
   { label: "Any era", value: "any" },
 ];
 
+const COMMITMENT_CHIPS = [
+  { label: "Quick watch", value: "short" },
+  { label: "Committed", value: "standard" },
+  { label: "Movie only", value: "movie" },
+  { label: "Anything goes", value: "any" },
+];
+
 function FilterIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -50,6 +57,8 @@ function FilterPanel({
   loading,
   selectedEras,
   onToggleEra,
+  selectedCommitment,
+  onSelectCommitment,
   onClear,
   onUpdate,
 }: {
@@ -57,6 +66,8 @@ function FilterPanel({
   loading: boolean;
   selectedEras: string[];
   onToggleEra: (value: string) => void;
+  selectedCommitment: string;
+  onSelectCommitment: (value: string) => void;
   onClear: () => void;
   onUpdate: () => void;
 }) {
@@ -79,6 +90,32 @@ function FilterPanel({
                   <button
                     key={chip.value}
                     onClick={() => onToggleEra(chip.value)}
+                    disabled={loading}
+                    className={[
+                      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
+                      selected
+                        ? "bg-accent/15 border-accent/50 text-white"
+                        : "bg-background border-border text-muted hover:border-accent/30",
+                    ].join(" ")}
+                  >
+                    {chip.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
+              Commitment
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {COMMITMENT_CHIPS.map((chip) => {
+                const selected = selectedCommitment === chip.value;
+                return (
+                  <button
+                    key={chip.value}
+                    onClick={() => onSelectCommitment(chip.value)}
                     disabled={loading}
                     className={[
                       "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
@@ -190,15 +227,18 @@ export default function ResultsScreen({
   onFilter,
   onFindMore,
   loading,
+  initialCommitment,
 }: {
   results: Recommendation[];
   onStartOver: () => void;
-  onFilter: (era: string[]) => void;
+  onFilter: (era: string[], commitment: string) => void;
   onFindMore: () => void;
   loading: boolean;
+  initialCommitment: string;
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedEras, setSelectedEras] = useState<string[]>(["any"]);
+  const [selectedCommitment, setSelectedCommitment] = useState(initialCommitment);
   const wasLoading = useRef(false);
 
   useEffect(() => {
@@ -244,8 +284,10 @@ export default function ResultsScreen({
         loading={loading}
         selectedEras={selectedEras}
         onToggleEra={toggleEra}
-        onClear={() => setSelectedEras(["any"])}
-        onUpdate={() => onFilter(selectedEras)}
+        selectedCommitment={selectedCommitment}
+        onSelectCommitment={setSelectedCommitment}
+        onClear={() => { setSelectedEras(["any"]); setSelectedCommitment(initialCommitment); }}
+        onUpdate={() => onFilter(selectedEras, selectedCommitment)}
       />
 
       <div className="flex flex-col gap-4 pb-8">

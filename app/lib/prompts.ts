@@ -39,8 +39,6 @@ export function buildUserMessage({
   mood,
   themes,
   commitment,
-  reference,
-  avoid,
   era,
   exclude,
 }: {
@@ -48,8 +46,6 @@ export function buildUserMessage({
   mood: string;
   themes: string[];
   commitment: string;
-  reference: string;
-  avoid: string[];
   era: string[];
   exclude: string[];
 }): string {
@@ -63,12 +59,6 @@ export function buildUserMessage({
     `- Core themes: ${themes.join(", ")}`,
   ];
 
-  if (reference?.trim()) {
-    parts.push(`- Reference show I love: ${reference.trim()}`);
-  }
-  if (avoid.length > 0) {
-    parts.push(`- Things to avoid: ${avoid.join(", ")}`);
-  }
   if (exclude.length > 0) {
     parts.push(`- Do not recommend any of these titles: ${exclude.join(", ")}`);
   }
