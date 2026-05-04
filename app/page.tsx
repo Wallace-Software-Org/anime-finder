@@ -46,7 +46,7 @@ export default function Page() {
   } = useQuiz();
 
   return (
-    <div className="bg-background text-white flex flex-col min-h-screen">
+    <div className="bg-background text-white flex flex-col">
       <Header
         isQuiz={isQuiz}
         step={step}
@@ -186,7 +186,7 @@ export default function Page() {
         </div>
 
         {isQuiz && (
-          <div className="shrink-0 px-6 pb-8 pt-3">
+          <div className="shrink-0 px-6 py-8">
             <BottomNavigation
               step={step}
               totalSteps={TOTAL_STEPS}
