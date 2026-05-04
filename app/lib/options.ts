@@ -45,10 +45,10 @@ export const THEME_OPTIONS = [
 ];
 
 export const COMMITMENT_OPTIONS = [
-  { emoji: "🎯", label: "Short and complete, under 15 eps", value: "short" },
-  { emoji: "📺", label: "Standard, one or two seasons", value: "standard" },
-  { emoji: "🏔️", label: "Long haul is fine", value: "long-haul" },
-  { emoji: "✨", label: "No preference", value: "no-preference" },
+  { emoji: "🎯", label: "Quick watch, 1 to 2 seasons", value: "short" },
+  { emoji: "📺", label: "Committed, 3 to 5 seasons", value: "standard" },
+  { emoji: "🎬", label: "Movie or film only", value: "movie" },
+  { emoji: "✨", label: "Anything goes", value: "any" },
 ];
 
 export const AVOID_OPTIONS = [

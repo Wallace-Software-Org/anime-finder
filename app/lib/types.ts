@@ -5,13 +5,22 @@ export type ExperienceLevel =
   | "deep"
   | "veteran";
 
+export type Commitment = "short" | "standard" | "movie" | "any";
+
 export interface QuizAnswers {
   experience: ExperienceLevel | "";
   mood: string;
   themes: string[];
-  commitment: string;
+  commitment: Commitment | "";
   reference: string;
   avoid: string[];
+}
+
+export interface MALAnime {
+  score: number | null;
+  id: number | null;
+  episodes: number | null;
+  media_type?: string;
 }
 
 export interface Recommendation {
