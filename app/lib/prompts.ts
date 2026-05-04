@@ -22,6 +22,7 @@ Rules:
 - Respect the MAL member count ceiling specified by the experience level instruction — this is the most important constraint
 - Never recommend shows that violate the member count ceiling
 - Prefer works that genuinely match the taste profile over well-known defaults
+- All 5 recommendations must be completely different titles — never repeat a show within the same response
 - Return ONLY valid NDJSON — one complete JSON object per line, no markdown fences, no explanation, no preamble, no trailing text
 - Output exactly 5 lines, each a self-contained JSON object
 
@@ -54,7 +55,7 @@ export function buildUserMessage({
   const parts: string[] = [
     `Find me 5 anime recommendations with these preferences:`,
     `- Experience level instruction: ${experienceInstruction}`,
-    `- Mood: ${mood}`,
+    `- Mood: ${mood || "no preference"}`,
     `- Core themes: ${themes.join(", ")}`,
   ];
 
@@ -64,13 +65,12 @@ export function buildUserMessage({
 
   parts.push(
     ``,
-    `HARD CONSTRAINT — EPISODES: You must verify the episode count before recommending any show. Apply these exact numeric rules with zero exceptions:`,
-    `- short: must be fewer than 15 episodes total`,
-    `- standard: must be between 13 and 52 episodes total`,
-    `- long: must be over 50 episodes total`,
-    `- any: no restriction`,
-    `If a show does not meet this exact episode range it is disqualified. Do not recommend it regardless of how well it matches other criteria.`,
-    `Selected episode commitment: ${commitment}`,
+    `HARD CONSTRAINT — EPISODES: Verify the episode count before recommending any show. Apply exactly one rule based on the selected commitment, with zero exceptions:`,
+    `- short: recommend only shows with 26 episodes or fewer`,
+    `- long: recommend only shows with 27 episodes or more`,
+    `- any: no episode restriction`,
+    `Selected commitment: ${commitment} — apply only the ${commitment} rule above.`,
+    `A show outside this episode range is disqualified regardless of how well it matches other criteria. Violating this constraint makes the entire response wrong.`,
   );
 
   const eraConstraint =

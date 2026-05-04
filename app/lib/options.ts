@@ -54,6 +54,6 @@ export const THEME_OPTIONS: QuizOption<ThemeValue>[] = [
 
 export const COMMITMENT_OPTIONS: QuizOption<QuizCommitmentValue>[] = [
   { emoji: "🎯", label: "Short, 1 to 2 seasons", value: "short" },
-  { emoji: "🏔️", label: "Long, 3 seasons or more", value: "long-haul" },
+  { emoji: "🏔️", label: "Long, 3 seasons or more", value: "long" },
   { emoji: "✨", label: "No preference", value: "no-preference" },
 ];

@@ -27,11 +27,7 @@ export type ThemeValue =
   | "mystery-and-secrets"
   | "growth-and-becoming-someone";
 
-export type QuizCommitmentValue =
-  | "short"
-  | "standard"
-  | "long-haul"
-  | "no-preference";
+export type QuizCommitmentValue = "short" | "long" | "no-preference";
 
 export type ResultsCommitmentValue = "short" | "standard" | "movie" | "any";
 
