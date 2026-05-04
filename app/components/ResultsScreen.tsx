@@ -1,9 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import type { Recommendation } from "../lib/types";
+import type {
+  CommitmentValue,
+  EraValue,
+  FilterChipOption,
+  Recommendation,
+  ResultsCommitmentValue,
+} from "../lib/types";
 
-const ERA_CHIPS = [
+const ERA_CHIPS: FilterChipOption<EraValue>[] = [
   { label: "Before 1990", value: "Before 1990" },
   { label: "1990s", value: "1990s" },
   { label: "2000s", value: "2000s" },
@@ -12,7 +18,7 @@ const ERA_CHIPS = [
   { label: "Any era", value: "any" },
 ];
 
-const COMMITMENT_CHIPS = [
+const COMMITMENT_CHIPS: FilterChipOption<ResultsCommitmentValue>[] = [
   { label: "Quick watch", value: "short" },
   { label: "Committed", value: "standard" },
   { label: "Movie only", value: "movie" },
@@ -64,10 +70,10 @@ function FilterPanel({
 }: {
   open: boolean;
   loading: boolean;
-  selectedEras: string[];
-  onToggleEra: (value: string) => void;
-  selectedCommitment: string;
-  onSelectCommitment: (value: string) => void;
+  selectedEras: EraValue[];
+  onToggleEra: (value: EraValue) => void;
+  selectedCommitment: CommitmentValue | "";
+  onSelectCommitment: (value: ResultsCommitmentValue) => void;
   onClear: () => void;
   onUpdate: () => void;
 }) {
@@ -231,14 +237,15 @@ export default function ResultsScreen({
 }: {
   results: Recommendation[];
   onStartOver: () => void;
-  onFilter: (era: string[], commitment: string) => void;
+  onFilter: (era: EraValue[], commitment: CommitmentValue | "") => void;
   onFindMore: () => void;
   loading: boolean;
-  initialCommitment: string;
+  initialCommitment: CommitmentValue | "";
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selectedEras, setSelectedEras] = useState<string[]>(["any"]);
-  const [selectedCommitment, setSelectedCommitment] = useState(initialCommitment);
+  const [selectedEras, setSelectedEras] = useState<EraValue[]>(["any"]);
+  const [selectedCommitment, setSelectedCommitment] =
+    useState(initialCommitment);
   const wasLoading = useRef(false);
 
   useEffect(() => {
@@ -248,7 +255,7 @@ export default function ResultsScreen({
     wasLoading.current = loading;
   }, [loading]);
 
-  const toggleEra = (value: string) => {
+  const toggleEra = (value: EraValue) => {
     if (value === "any") {
       setSelectedEras(["any"]);
       return;
@@ -286,7 +293,10 @@ export default function ResultsScreen({
         onToggleEra={toggleEra}
         selectedCommitment={selectedCommitment}
         onSelectCommitment={setSelectedCommitment}
-        onClear={() => { setSelectedEras(["any"]); setSelectedCommitment(initialCommitment); }}
+        onClear={() => {
+          setSelectedEras(["any"]);
+          setSelectedCommitment(initialCommitment);
+        }}
         onUpdate={() => onFilter(selectedEras, selectedCommitment)}
       />
 

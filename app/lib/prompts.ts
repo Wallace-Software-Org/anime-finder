@@ -1,12 +1,17 @@
-export const EXPERIENCE_MAP: Record<string, string> = {
-  beginner:
-    "mainstream shows are fine, include popular well-known titles",
+import type {
+  CommitmentValue,
+  EraValue,
+  ExperienceLevel,
+  MoodValue,
+  ThemeValue,
+} from "./types";
+
+export const EXPERIENCE_MAP: Record<ExperienceLevel, string> = {
+  beginner: "mainstream shows are fine, include popular well-known titles",
   casual:
     "mix of popular and lesser known, avoid the most obscure titles, under 2 million MAL members",
-  seasoned:
-    "avoid mainstream hits, under 500k MAL members only",
-  deep:
-    "hidden gems only, under 200k MAL members, nothing that appears on mainstream recommendation lists",
+  seasoned: "avoid mainstream hits, under 500k MAL members only",
+  deep: "hidden gems only, under 200k MAL members, nothing that appears on mainstream recommendation lists",
   veteran:
     "extremely obscure only, under 50k MAL members, shows most anime fans have never heard of",
 };
@@ -35,15 +40,16 @@ export function buildUserMessage({
   era,
   exclude,
 }: {
-  experience: string;
-  mood: string;
-  themes: string[];
-  commitment: string;
-  era: string[];
+  experience: ExperienceLevel | "";
+  mood: MoodValue | "";
+  themes: ThemeValue[];
+  commitment: CommitmentValue | "";
+  era: EraValue[];
   exclude: string[];
 }): string {
   const experienceInstruction =
-    EXPERIENCE_MAP[experience] ?? EXPERIENCE_MAP.seasoned;
+    (experience ? EXPERIENCE_MAP[experience] : undefined) ??
+    EXPERIENCE_MAP.seasoned;
 
   const parts: string[] = [
     `Find me 5 anime recommendations with these preferences:`,

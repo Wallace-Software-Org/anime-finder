@@ -1,13 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import type { Recommendation } from "../lib/types";
+import type {
+  CommitmentValue,
+  EraValue,
+  ExperienceLevel,
+  MoodValue,
+  QuizCommitmentValue,
+  Recommendation,
+  ThemeValue,
+} from "../lib/types";
 
 export const TOTAL_STEPS = 4;
 
 async function streamRecommendations(
   body: object,
-  onResult: (rec: Recommendation) => void
+  onResult: (rec: Recommendation) => void,
 ): Promise<void> {
   const res = await fetch("/api/recommend", {
     method: "POST",
@@ -54,14 +62,14 @@ async function streamRecommendations(
 
 export function useQuiz() {
   const [step, setStep] = useState(0);
-  const [experience, setExperience] = useState("");
-  const [mood, setMood] = useState("");
-  const [themes, setThemes] = useState<string[]>([]);
-  const [commitment, setCommitment] = useState("");
+  const [experience, setExperience] = useState<ExperienceLevel | "">("");
+  const [mood, setMood] = useState<MoodValue | "">("");
+  const [themes, setThemes] = useState<ThemeValue[]>([]);
+  const [commitment, setCommitment] = useState<QuizCommitmentValue | "">("");
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [era, setEra] = useState<string[]>(["any"]);
+  const [era, setEra] = useState<EraValue[]>(["any"]);
 
   // q1=experience, q2=mood, q3=themes, q4=commitment
   const canProceed = () => {
@@ -72,7 +80,7 @@ export function useQuiz() {
     return true;
   };
 
-  const toggleTheme = (value: string) =>
+  const toggleTheme = (value: ThemeValue) =>
     setThemes((prev) =>
       prev.includes(value)
         ? prev.filter((t) => t !== value)
@@ -109,14 +117,23 @@ export function useQuiz() {
     }
   };
 
-  const handleFilter = async (selectedEra: string[], selectedCommitment: string) => {
+  const handleFilter = async (
+    selectedEra: EraValue[],
+    selectedCommitment: CommitmentValue | "",
+  ) => {
     setEra(selectedEra);
     setLoading(true);
     setError("");
     let first = true;
     try {
       await streamRecommendations(
-        { experience, mood, themes, commitment: selectedCommitment, era: selectedEra },
+        {
+          experience,
+          mood,
+          themes,
+          commitment: selectedCommitment,
+          era: selectedEra,
+        },
         (rec) => {
           if (first) {
             setResults([rec]);

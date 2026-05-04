@@ -1,4 +1,12 @@
-export const EXPERIENCE_OPTIONS = [
+import type {
+  ExperienceLevel,
+  MoodValue,
+  QuizCommitmentValue,
+  QuizOption,
+  ThemeValue,
+} from "./types";
+
+export const EXPERIENCE_OPTIONS: QuizOption<ExperienceLevel>[] = [
   { emoji: "🌱", label: "Just getting started", value: "beginner" },
   { emoji: "📺", label: "Watched a decent amount", value: "casual" },
   { emoji: "🎌", label: "Seen most of the classics", value: "seasoned" },
@@ -6,7 +14,7 @@ export const EXPERIENCE_OPTIONS = [
   { emoji: "👁️", label: "Seen it all, go obscure", value: "veteran" },
 ];
 
-export const MOOD_OPTIONS = [
+export const MOOD_OPTIONS: QuizOption<MoodValue>[] = [
   { emoji: "🔥", label: "Intense, edge of my seat", value: "intense" },
   { emoji: "😮‍💨", label: "Chill, something to relax into", value: "chill" },
   { emoji: "💀", label: "Dark, don't spare my feelings", value: "dark" },
@@ -18,7 +26,7 @@ export const MOOD_OPTIONS = [
   },
 ];
 
-export const THEME_OPTIONS = [
+export const THEME_OPTIONS: QuizOption<ThemeValue>[] = [
   { emoji: "🗡️", label: "Power and ambition", value: "power-and-ambition" },
   {
     emoji: "🤝",
@@ -44,10 +52,8 @@ export const THEME_OPTIONS = [
   },
 ];
 
-export const COMMITMENT_OPTIONS = [
-  { emoji: "🎯", label: "Short and complete, under 15 eps", value: "short" },
-  { emoji: "📺", label: "Standard, one or two seasons", value: "standard" },
-  { emoji: "🏔️", label: "Long haul is fine", value: "long-haul" },
+export const COMMITMENT_OPTIONS: QuizOption<QuizCommitmentValue>[] = [
+  { emoji: "🎯", label: "Short, 1 to 2 seasons", value: "short" },
+  { emoji: "🏔️", label: "Long, 3 seasons or more", value: "long-haul" },
   { emoji: "✨", label: "No preference", value: "no-preference" },
 ];
-
