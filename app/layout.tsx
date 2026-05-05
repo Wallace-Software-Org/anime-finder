@@ -17,11 +17,11 @@ const baseUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
-  title: "AniMatch — Find your next anime",
+  title: "AniMatch, Find your next anime",
   description:
-    "Four questions. Your next anime awaits. AI-powered recommendations matched to your exact taste.",
+    "Answer four questions. Get five anime recommendations matched to your exact taste.",
   openGraph: {
-    title: "AniMatch — Find your next anime",
+    title: "AniMatch, Find your next anime",
     description: "Four questions. Your next anime awaits.",
     url: baseUrl,
     siteName: "AniMatch",
@@ -30,15 +30,16 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "AniMatch — Find your next anime",
+        alt: "AniMatch, Find your next anime",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AniMatch — Find your next anime",
-    description: "Four questions. Your next anime awaits.",
+    title: "AniMatch, Find your next anime",
+    description:
+      "Answer four questions. Get five anime recommendations matched to your exact taste.",
     images: ["/og-image.png"],
   },
 };

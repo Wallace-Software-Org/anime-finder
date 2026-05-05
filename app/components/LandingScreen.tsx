@@ -9,7 +9,7 @@ export default function LandingScreen({ onStart }: { onStart: () => void }) {
           Find your next anime.
         </h1>
         <p className="text-muted text-base max-w-xs mx-auto">
-          Answer five questions. Get five hidden gems matched to your taste.
+          Answer four questions. Get five recommendations.
         </p>
       </div>
       <button
