@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AniMatch — Meta tags for layout.tsx
 
-## Getting Started
+Replace the existing metadata export in app/layout.tsx with this:
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```typescript
+export const metadata: Metadata = {
+  title: "AniMatch — Find your next anime",
+  description:
+    "Answer four questions. Get five hidden gem anime recommendations matched to your exact taste. No obvious picks, no mainstream defaults.",
+  keywords: [
+    "anime recommendations",
+    "anime finder",
+    "hidden gem anime",
+    "anime discovery",
+    "what anime should I watch",
+    "anime suggestion",
+  ],
+  openGraph: {
+    title: "AniMatch — Find your next anime",
+    description:
+      "Answer four questions. Get five hidden gem anime recommendations matched to your exact taste.",
+    url: "https://animatch.app",
+    siteName: "AniMatch",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AniMatch — Find your next anime",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AniMatch — Find your next anime",
+    description:
+      "Answer four questions. Get five hidden gem anime recommendations matched to your exact taste.",
+    images: ["/og-image.png"],
+  },
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
+  themeColor: "#0d0d0f",
+};
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## File placement
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- og-image.svg → convert to og-image.png and place in /public/og-image.png
+- favicon.svg → place in /public/favicon.svg (Next.js serves /public as root)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Converting SVG to PNG for og-image
 
-## Learn More
+The og-image needs to be a PNG for broad social media support.
+Options:
 
-To learn more about Next.js, take a look at the following resources:
+1. Open og-image.svg in a browser, screenshot at 1200x630, save as og-image.png
+2. Use an online SVG to PNG converter like svgtopng.com
+3. In Claude Code: `npx sharp-cli input=og-image.svg output=og-image.png width=1200 height=630`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Update your domain
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Replace https://animatch.app with your actual Vercel URL until you have a custom domain.
