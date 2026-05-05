@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "AniMatch",
     images: [
       {
-        url: "/og-image.png",
+        url: "/meta.png",
         width: 1200,
         height: 630,
         alt: "AniMatch, Find your next anime",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "AniMatch, Find your next anime",
     description:
       "Answer four questions. Get five anime recommendations matched to your exact taste.",
-    images: ["/og-image.png"],
+    images: ["/meta.png"],
   },
 };
 
