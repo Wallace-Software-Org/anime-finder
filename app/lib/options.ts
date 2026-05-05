@@ -40,7 +40,7 @@ export const THEME_OPTIONS: QuizOption<ThemeValue>[] = [
     value: "world-building-and-lore",
   },
   {
-    emoji: "💔",
+    emoji: "❤️",
     label: "Love and relationships",
     value: "love-and-relationships",
   },

@@ -17,21 +17,24 @@ const PHRASES = [
   "Almost got them...",
 ];
 
+function randomIndex(exclude: number) {
+  let next: number;
+  do {
+    next = Math.floor(Math.random() * PHRASES.length);
+  } while (next === exclude && PHRASES.length > 1);
+  return next;
+}
+
 export default function LoadingScreen() {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() => randomIndex(-1));
 
   useEffect(() => {
-    const id = setInterval(
-      () => setIndex((i) => (i + 1) % PHRASES.length),
-      3000,
-    );
+    const id = setInterval(() => setIndex((i) => randomIndex(i)), 3000);
     return () => clearInterval(id);
   }, []);
 
   return (
     <div className="flex flex-col mb-20 items-center justify-center flex-1 gap-4 animate-fade-up">
-      {/* <div className="w-5 h-5 rounded-full border-2 border-accent/20 border-t-accent animate-spin" /> */}
-
       <p
         key={index}
         className="animate-fade-up text-center"
@@ -39,13 +42,6 @@ export default function LoadingScreen() {
       >
         {PHRASES[index]}
       </p>
-
-      {/* <p
-        className="text-center"
-        style={{ fontSize: "13px", color: "#444450" }}
-      >
-        This may take a moment
-      </p> */}
     </div>
   );
 }
