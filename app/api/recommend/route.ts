@@ -101,6 +101,13 @@ export async function POST(request: Request) {
       exclude = [],
     } = await request.json();
 
+    if (!mood || !Array.isArray(themes) || themes.length === 0) {
+      return Response.json(
+        { error: "mood and themes are required" },
+        { status: 400 },
+      );
+    }
+
     const userMessage = buildUserMessage({
       experience,
       mood,
