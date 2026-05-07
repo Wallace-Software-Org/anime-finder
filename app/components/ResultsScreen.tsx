@@ -17,7 +17,6 @@ const ERA_CHIPS: FilterChipOption<EraValue>[] = [
   { label: "Any era", value: "any" },
 ];
 
-
 function FilterIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -237,7 +236,7 @@ export default function ResultsScreen({
       <div className="flex items-start justify-between gap-4 pb-8">
         <div>
           <h2 className="text-2xl font-bold">Your next binge</h2>
-          <p className="text-sm text-muted mt-1">Picked for your taste</p>
+          <p className="text-sm text-muted mt-1">Selected for you</p>
         </div>
         <button
           onClick={() => setFilterOpen((o) => !o)}
