@@ -10,7 +10,6 @@ export const EXPERIENCE_OPTIONS: QuizOption<ExperienceLevel>[] = [
   { emoji: "🌱", label: "Just getting started", value: "beginner" },
   { emoji: "📺", label: "Watched a decent amount", value: "casual" },
   { emoji: "🎌", label: "Seen most of the classics", value: "seasoned" },
-  { emoji: "🔍", label: "Pretty deep in the rabbit hole", value: "deep" },
   { emoji: "👁️", label: "Seen it all, go obscure", value: "veteran" },
 ];
 

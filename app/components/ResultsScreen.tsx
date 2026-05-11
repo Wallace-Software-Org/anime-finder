@@ -4,9 +4,17 @@ import { useState, useEffect, useRef } from "react";
 import type {
   CommitmentValue,
   EraValue,
+  ExperienceLevel,
   FilterChipOption,
   Recommendation,
 } from "../lib/types";
+
+const POPULARITY_CHIPS: FilterChipOption<ExperienceLevel>[] = [
+  { label: "Mainstream", value: "beginner" },
+  { label: "Popular", value: "casual" },
+  { label: "Mixed", value: "seasoned" },
+  { label: "Underground", value: "veteran" },
+];
 
 const ERA_CHIPS: FilterChipOption<EraValue>[] = [
   { label: "Before 1990", value: "Before 1990" },
@@ -53,6 +61,8 @@ function ExternalLinkIcon() {
 function FilterPanel({
   open,
   loading,
+  selectedPopularity,
+  onSelectPopularity,
   selectedEras,
   onToggleEra,
   onClear,
@@ -60,6 +70,8 @@ function FilterPanel({
 }: {
   open: boolean;
   loading: boolean;
+  selectedPopularity: ExperienceLevel;
+  onSelectPopularity: (value: ExperienceLevel) => void;
   selectedEras: EraValue[];
   onToggleEra: (value: EraValue) => void;
   onClear: () => void;
@@ -73,6 +85,31 @@ function FilterPanel({
     >
       <div className="overflow-hidden min-h-0">
         <div className="rounded-2xl bg-surface border border-border p-5 flex flex-col gap-4">
+          <div>
+            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
+              Popularity
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {POPULARITY_CHIPS.map((chip) => (
+                <button
+                  key={chip.value}
+                  onClick={() => onSelectPopularity(chip.value)}
+                  disabled={loading}
+                  className={[
+                    "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
+                    selectedPopularity === chip.value
+                      ? "bg-accent/15 border-accent/50 text-white"
+                      : "bg-background border-border text-muted hover:border-accent/30",
+                  ].join(" ")}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
           <div>
             <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
               Era
@@ -196,17 +233,22 @@ export default function ResultsScreen({
   onFindMore,
   loading,
   initialCommitment,
+  initialExperience,
 }: {
   results: Recommendation[];
   onStartOver: () => void;
-  onFilter: (era: EraValue[], commitment: CommitmentValue | "") => void;
+  onFilter: (era: EraValue[], commitment: CommitmentValue | "", experience: ExperienceLevel | "") => void;
   onFindMore: () => void;
   loading: boolean;
   initialCommitment: CommitmentValue | "";
+  initialExperience: ExperienceLevel | "";
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedEras, setSelectedEras] = useState<EraValue[]>(["any"]);
   const [selectedCommitment] = useState(initialCommitment);
+  const [selectedPopularity, setSelectedPopularity] = useState<ExperienceLevel>(
+    initialExperience || "seasoned",
+  );
   const wasLoading = useRef(false);
 
   useEffect(() => {
@@ -250,10 +292,12 @@ export default function ResultsScreen({
       <FilterPanel
         open={filterOpen}
         loading={loading}
+        selectedPopularity={selectedPopularity}
+        onSelectPopularity={setSelectedPopularity}
         selectedEras={selectedEras}
         onToggleEra={toggleEra}
         onClear={() => setSelectedEras(["any"])}
-        onUpdate={() => onFilter(selectedEras, selectedCommitment)}
+        onUpdate={() => onFilter(selectedEras, selectedCommitment, selectedPopularity)}
       />
 
       <div className="flex flex-col gap-4 pb-8">

@@ -11,7 +11,6 @@ export const EXPERIENCE_MAP: Record<ExperienceLevel, string> = {
   casual:
     "mix of popular and lesser known, avoid the most obscure titles, under 2 million MAL members",
   seasoned: "avoid mainstream hits, under 500k MAL members only",
-  deep: "hidden gems only, under 200k MAL members, nothing that appears on mainstream recommendation lists",
   veteran:
     "extremely obscure only, under 50k MAL members, shows most anime fans have never heard of",
 };

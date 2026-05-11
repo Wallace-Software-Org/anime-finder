@@ -13,7 +13,6 @@ export type ExperienceLevel =
   | "beginner"
   | "casual"
   | "seasoned"
-  | "deep"
   | "veteran";
 
 export type MoodValue = "intense" | "chill" | "dark" | "light" | "mind-bending";

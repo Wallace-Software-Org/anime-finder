@@ -144,6 +144,7 @@ export default function Page() {
               onFindMore={handleFindMore}
               loading={loading}
               initialCommitment={commitment}
+              initialExperience={experience}
             />
           )}
 

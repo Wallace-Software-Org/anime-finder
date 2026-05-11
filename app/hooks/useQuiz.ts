@@ -120,6 +120,7 @@ export function useQuiz() {
   const handleFilter = async (
     selectedEra: EraValue[],
     selectedCommitment: CommitmentValue | "",
+    filterExperience: ExperienceLevel | "",
   ) => {
     setEra(selectedEra);
     setLoading(true);
@@ -128,7 +129,7 @@ export function useQuiz() {
     try {
       await streamRecommendations(
         {
-          experience,
+          experience: filterExperience,
           mood,
           themes,
           commitment: selectedCommitment,

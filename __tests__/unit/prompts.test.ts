@@ -3,12 +3,11 @@ import { buildUserMessage, EXPERIENCE_MAP } from "@/app/lib/prompts";
 import type { ThemeValue, EraValue } from "@/app/lib/types";
 
 describe("EXPERIENCE_MAP", () => {
-  it("contains all five experience levels", () => {
+  it("contains all four experience levels", () => {
     expect(Object.keys(EXPERIENCE_MAP)).toEqual([
       "beginner",
       "casual",
       "seasoned",
-      "deep",
       "veteran",
     ]);
   });
