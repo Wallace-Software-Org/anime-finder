@@ -62,7 +62,7 @@ export default function Page() {
           key={step}
           className={[
             "flex flex-col flex-1 items-center px-6 pt-6 md:pt-10 animate-fade-up",
-            isResults ? "overflow-y-auto" : "overflow-hidden",
+            "overflow-y-auto",
           ].join(" ")}
         >
           {step === 0 && <LandingScreen onStart={() => handleNext()} />}
