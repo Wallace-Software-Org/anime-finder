@@ -6,7 +6,9 @@ import type {
   EraValue,
   ExperienceLevel,
   FilterChipOption,
+  MoodValue,
   Recommendation,
+  ThemeValue,
 } from "../lib/types";
 
 const POPULARITY_CHIPS: FilterChipOption<ExperienceLevel>[] = [
@@ -23,6 +25,24 @@ const ERA_CHIPS: FilterChipOption<EraValue>[] = [
   { label: "2010s", value: "2010s" },
   { label: "2020s", value: "2020s" },
   { label: "Any era", value: "any" },
+];
+
+const MOOD_FILTER_CHIPS: FilterChipOption<MoodValue>[] = [
+  { label: "Intense", value: "intense" },
+  { label: "Chill", value: "chill" },
+  { label: "Dark", value: "dark" },
+  { label: "Light", value: "light" },
+  { label: "Mind-bending", value: "mind-bending" },
+];
+
+const THEME_FILTER_CHIPS: FilterChipOption<ThemeValue>[] = [
+  { label: "Power & ambition", value: "power-and-ambition" },
+  { label: "Friendship", value: "friendship-and-loyalty" },
+  { label: "Psychological", value: "psychological-games" },
+  { label: "World-building", value: "world-building-and-lore" },
+  { label: "Romance", value: "love-and-relationships" },
+  { label: "Mystery", value: "mystery-and-secrets" },
+  { label: "Growth", value: "growth-and-becoming-someone" },
 ];
 
 function FilterIcon() {
@@ -65,6 +85,10 @@ function FilterPanel({
   onSelectPopularity,
   selectedEras,
   onToggleEra,
+  selectedMoods,
+  onToggleMood,
+  selectedFilterThemes,
+  onToggleFilterTheme,
   onClear,
   onUpdate,
 }: {
@@ -74,9 +98,21 @@ function FilterPanel({
   onSelectPopularity: (value: ExperienceLevel) => void;
   selectedEras: EraValue[];
   onToggleEra: (value: EraValue) => void;
+  selectedMoods: MoodValue[];
+  onToggleMood: (value: MoodValue) => void;
+  selectedFilterThemes: ThemeValue[];
+  onToggleFilterTheme: (value: ThemeValue) => void;
   onClear: () => void;
   onUpdate: () => void;
 }) {
+  const chipClass = (selected: boolean) =>
+    [
+      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
+      selected
+        ? "bg-accent/15 border-accent/50 text-white"
+        : "bg-background border-border text-muted hover:border-accent/30",
+    ].join(" ");
+
   return (
     <div
       className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
@@ -95,12 +131,7 @@ function FilterPanel({
                   key={chip.value}
                   onClick={() => onSelectPopularity(chip.value)}
                   disabled={loading}
-                  className={[
-                    "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
-                    selectedPopularity === chip.value
-                      ? "bg-accent/15 border-accent/50 text-white"
-                      : "bg-background border-border text-muted hover:border-accent/30",
-                  ].join(" ")}
+                  className={chipClass(selectedPopularity === chip.value)}
                 >
                   {chip.label}
                 </button>
@@ -115,24 +146,56 @@ function FilterPanel({
               Era
             </p>
             <div className="flex flex-wrap gap-2">
-              {ERA_CHIPS.map((chip) => {
-                const selected = selectedEras.includes(chip.value);
-                return (
-                  <button
-                    key={chip.value}
-                    onClick={() => onToggleEra(chip.value)}
-                    disabled={loading}
-                    className={[
-                      "px-3.5 py-1.5 rounded-xl border text-sm font-medium transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed",
-                      selected
-                        ? "bg-accent/15 border-accent/50 text-white"
-                        : "bg-background border-border text-muted hover:border-accent/30",
-                    ].join(" ")}
-                  >
-                    {chip.label}
-                  </button>
-                );
-              })}
+              {ERA_CHIPS.map((chip) => (
+                <button
+                  key={chip.value}
+                  onClick={() => onToggleEra(chip.value)}
+                  disabled={loading}
+                  className={chipClass(selectedEras.includes(chip.value))}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          <div>
+            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
+              Mood
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {MOOD_FILTER_CHIPS.map((chip) => (
+                <button
+                  key={chip.value}
+                  onClick={() => onToggleMood(chip.value)}
+                  disabled={loading}
+                  className={chipClass(selectedMoods.includes(chip.value))}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          <div>
+            <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-3">
+              Themes
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {THEME_FILTER_CHIPS.map((chip) => (
+                <button
+                  key={chip.value}
+                  onClick={() => onToggleFilterTheme(chip.value)}
+                  disabled={loading}
+                  className={chipClass(selectedFilterThemes.includes(chip.value))}
+                >
+                  {chip.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -234,14 +297,24 @@ export default function ResultsScreen({
   loading,
   initialCommitment,
   initialExperience,
+  initialMood,
+  initialThemes,
 }: {
   results: Recommendation[];
   onStartOver: () => void;
-  onFilter: (era: EraValue[], commitment: CommitmentValue | "", experience: ExperienceLevel | "") => void;
+  onFilter: (
+    era: EraValue[],
+    commitment: CommitmentValue | "",
+    experience: ExperienceLevel | "",
+    mood: MoodValue[],
+    themes: string[],
+  ) => void;
   onFindMore: () => void;
   loading: boolean;
   initialCommitment: CommitmentValue | "";
   initialExperience: ExperienceLevel | "";
+  initialMood: MoodValue[];
+  initialThemes: ThemeValue[];
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedEras, setSelectedEras] = useState<EraValue[]>(["any"]);
@@ -249,6 +322,8 @@ export default function ResultsScreen({
   const [selectedPopularity, setSelectedPopularity] = useState<ExperienceLevel>(
     initialExperience || "seasoned",
   );
+  const [selectedMoods, setSelectedMoods] = useState<MoodValue[]>(initialMood);
+  const [selectedFilterThemes, setSelectedFilterThemes] = useState<ThemeValue[]>(initialThemes);
   const wasLoading = useRef(false);
 
   useEffect(() => {
@@ -273,6 +348,24 @@ export default function ResultsScreen({
     });
   };
 
+  const toggleMood = (value: MoodValue) =>
+    setSelectedMoods((prev) =>
+      prev.includes(value)
+        ? prev.filter((m) => m !== value)
+        : prev.length < 2
+          ? [...prev, value]
+          : prev,
+    );
+
+  const toggleFilterTheme = (value: ThemeValue) =>
+    setSelectedFilterThemes((prev) =>
+      prev.includes(value)
+        ? prev.filter((t) => t !== value)
+        : prev.length < 3
+          ? [...prev, value]
+          : prev,
+    );
+
   return (
     <div className="flex flex-col sm:max-w-xl">
       <div className="flex items-start justify-between gap-4 pb-8">
@@ -296,8 +389,25 @@ export default function ResultsScreen({
         onSelectPopularity={setSelectedPopularity}
         selectedEras={selectedEras}
         onToggleEra={toggleEra}
-        onClear={() => setSelectedEras(["any"])}
-        onUpdate={() => onFilter(selectedEras, selectedCommitment, selectedPopularity)}
+        selectedMoods={selectedMoods}
+        onToggleMood={toggleMood}
+        selectedFilterThemes={selectedFilterThemes}
+        onToggleFilterTheme={toggleFilterTheme}
+        onClear={() => {
+          setSelectedEras(["any"]);
+          setSelectedPopularity(initialExperience || "seasoned");
+          setSelectedMoods(initialMood);
+          setSelectedFilterThemes(initialThemes);
+        }}
+        onUpdate={() =>
+          onFilter(
+            selectedEras,
+            selectedCommitment,
+            selectedPopularity,
+            selectedMoods,
+            selectedFilterThemes,
+          )
+        }
       />
 
       <div className="flex flex-col gap-4 pb-8">

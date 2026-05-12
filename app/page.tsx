@@ -148,6 +148,8 @@ export default function Page() {
               loading={loading}
               initialCommitment={commitment}
               initialExperience={experience}
+              initialMood={mood}
+              initialThemes={themes}
             />
           )}
 

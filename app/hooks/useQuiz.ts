@@ -130,6 +130,8 @@ export function useQuiz() {
     selectedEra: EraValue[],
     selectedCommitment: CommitmentValue | "",
     filterExperience: ExperienceLevel | "",
+    filterMood: MoodValue[],
+    filterThemes: string[],
   ) => {
     setEra(selectedEra);
     setLoading(true);
@@ -139,8 +141,8 @@ export function useQuiz() {
       await streamRecommendations(
         {
           experience: filterExperience,
-          mood,
-          themes,
+          mood: filterMood,
+          themes: filterThemes,
           commitment: selectedCommitment,
           era: selectedEra,
         },

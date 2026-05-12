@@ -42,7 +42,7 @@ export function buildUserMessage({
 }: {
   experience: ExperienceLevel | "";
   mood: MoodValue[];
-  themes: ThemeValue[];
+  themes: string[];
   commitment: CommitmentValue | "";
   era: EraValue[];
   exclude: string[];
