@@ -65,7 +65,7 @@ export function useQuiz() {
   const [experience, setExperience] = useState<ExperienceLevel | "">("");
   const [mood, setMood] = useState<MoodValue[]>([]);
   const [themes, setThemes] = useState<ThemeValue[]>([]);
-  const [commitment, setCommitment] = useState<QuizCommitmentValue | "">("");
+  const [commitment, setCommitment] = useState<QuizCommitmentValue | "">( "no-preference");
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -187,7 +187,7 @@ export function useQuiz() {
     setExperience("");
     setMood([]);
     setThemes([]);
-    setCommitment("");
+    setCommitment("no-preference");
     setResults(null);
     setError("");
     setEra(["any"]);
