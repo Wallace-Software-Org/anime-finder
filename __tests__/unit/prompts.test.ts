@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildUserMessage, EXPERIENCE_MAP } from "@/app/lib/prompts";
-import type { ThemeValue, EraValue } from "@/app/lib/types";
+import type { MoodValue, ThemeValue, EraValue } from "@/app/lib/types";
 
 describe("EXPERIENCE_MAP", () => {
   it("contains all four experience levels", () => {
@@ -23,7 +23,7 @@ describe("EXPERIENCE_MAP", () => {
 describe("buildUserMessage", () => {
   const base = {
     experience: "seasoned" as const,
-    mood: "intense" as const,
+    mood: ["intense"] as MoodValue[],
     themes: ["power-and-ambition"] as ThemeValue[],
     commitment: "short" as const,
     era: ["any"] as EraValue[],

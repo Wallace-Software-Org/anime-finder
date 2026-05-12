@@ -59,7 +59,7 @@ afterAll(() => server.close());
 
 const validBody = {
   experience: "seasoned",
-  mood: "intense",
+  mood: ["intense"],
   themes: ["power-and-ambition"],
   commitment: "short",
   era: ["any"],
@@ -85,14 +85,15 @@ describe("POST /api/recommend", () => {
     expect(res.status).toBe(400);
   });
 
-  it("returns 400 when themes is empty", async () => {
+  it("returns 200 when themes is empty", async () => {
     const req = new Request("http://localhost/api/recommend", {
       method: "POST",
       body: JSON.stringify({ ...validBody, themes: [] }),
       headers: { "Content-Type": "application/json" },
     });
     const res = await POST(req);
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(200);
+    await drainStream(res);
   });
 
   it("returns a streaming response with correct content type", async () => {

@@ -5,17 +5,38 @@ import { useQuiz } from "@/app/hooks/useQuiz";
 describe("useQuiz", () => {
   it("initializes with correct default state", () => {
     const { result } = renderHook(() => useQuiz());
-    expect(result.current.mood).toBe("");
+    expect(result.current.mood).toEqual([]);
     expect(result.current.themes).toEqual([]);
     expect(result.current.experience).toBe("");
   });
 
-  it("setMood updates mood correctly", () => {
+  it("toggleMood adds a mood when under limit", () => {
     const { result } = renderHook(() => useQuiz());
     act(() => {
-      result.current.setMood("dark");
+      result.current.toggleMood("intense");
     });
-    expect(result.current.mood).toBe("dark");
+    expect(result.current.mood).toContain("intense");
+  });
+
+  it("toggleMood does not add a third mood", () => {
+    const { result } = renderHook(() => useQuiz());
+    act(() => {
+      result.current.toggleMood("intense");
+      result.current.toggleMood("dark");
+      result.current.toggleMood("chill");
+    });
+    expect(result.current.mood).toHaveLength(2);
+  });
+
+  it("toggleMood removes a mood when already selected", () => {
+    const { result } = renderHook(() => useQuiz());
+    act(() => {
+      result.current.toggleMood("intense");
+    });
+    act(() => {
+      result.current.toggleMood("intense");
+    });
+    expect(result.current.mood).not.toContain("intense");
   });
 
   it("toggleTheme adds a theme when under limit", () => {
@@ -26,14 +47,15 @@ describe("useQuiz", () => {
     expect(result.current.themes).toContain("power-and-ambition");
   });
 
-  it("toggleTheme does not add a third theme", () => {
+  it("toggleTheme does not add a fourth theme", () => {
     const { result } = renderHook(() => useQuiz());
     act(() => {
       result.current.toggleTheme("power-and-ambition");
       result.current.toggleTheme("mystery-and-secrets");
       result.current.toggleTheme("growth-and-becoming-someone");
+      result.current.toggleTheme("psychological-games");
     });
-    expect(result.current.themes).toHaveLength(2);
+    expect(result.current.themes).toHaveLength(3);
   });
 
   it("toggleTheme removes a theme when already selected", () => {
@@ -58,7 +80,7 @@ describe("useQuiz", () => {
   it("handleStartOver returns all state to defaults", () => {
     const { result } = renderHook(() => useQuiz());
     act(() => {
-      result.current.setMood("dark");
+      result.current.toggleMood("dark");
       result.current.toggleTheme("power-and-ambition");
       result.current.setCommitment("short");
     });

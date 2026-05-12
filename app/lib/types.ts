@@ -42,7 +42,7 @@ export type EraValue =
 
 export interface QuizAnswers {
   experience: ExperienceLevel | "";
-  mood: MoodValue | "";
+  mood: MoodValue[];
   themes: ThemeValue[];
   commitment: QuizCommitmentValue | "";
 }

@@ -22,7 +22,7 @@ export default function Page() {
     experience,
     setExperience,
     mood,
-    setMood,
+    toggleMood,
     themes,
     toggleTheme,
     commitment,
@@ -84,15 +84,18 @@ export default function Page() {
           )}
 
           {step === 2 && (
-            <QuizScreen title="What kind of ride are you looking for?">
+            <QuizScreen
+              title="What kind of ride are you looking for?"
+              subtitle="Pick up to 2"
+            >
               <div className="flex flex-col gap-3">
                 {MOOD_OPTIONS.map((opt) => (
                   <OptionPill
                     key={opt.value}
                     emoji={opt.emoji}
                     label={opt.label}
-                    selected={mood === opt.value}
-                    onClick={() => setMood(opt.value)}
+                    selected={mood.includes(opt.value)}
+                    onClick={() => toggleMood(opt.value)}
                   />
                 ))}
               </div>
@@ -102,7 +105,7 @@ export default function Page() {
           {step === 3 && (
             <QuizScreen
               title="What should it be about at its core?"
-              subtitle="Pick up to 2"
+              subtitle="Optional, pick up to 3"
             >
               <div className="flex flex-col gap-3">
                 {THEME_OPTIONS.map((opt) => (

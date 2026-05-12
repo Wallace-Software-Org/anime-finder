@@ -41,7 +41,7 @@ export function buildUserMessage({
   exclude,
 }: {
   experience: ExperienceLevel | "";
-  mood: MoodValue | "";
+  mood: MoodValue[];
   themes: ThemeValue[];
   commitment: CommitmentValue | "";
   era: EraValue[];
@@ -54,9 +54,12 @@ export function buildUserMessage({
   const parts: string[] = [
     `Find me 5 anime recommendations with these preferences:`,
     `- Experience level instruction: ${experienceInstruction}`,
-    `- Mood: ${mood || "no preference"}`,
-    `- Core themes: ${themes.join(", ")}`,
+    `- Mood: ${mood.join(", ")}`,
   ];
+
+  if (themes.length > 0) {
+    parts.push(`- Core themes: ${themes.join(", ")}`);
+  }
 
   if (exclude.length > 0) {
     parts.push(`- Do not recommend any of these titles: ${exclude.join(", ")}`);

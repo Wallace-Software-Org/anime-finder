@@ -101,9 +101,9 @@ export async function POST(request: Request) {
       exclude = [],
     } = await request.json();
 
-    if (!mood || !Array.isArray(themes) || themes.length === 0) {
+    if (!Array.isArray(mood) || mood.length === 0) {
       return Response.json(
-        { error: "mood and themes are required" },
+        { error: "mood is required" },
         { status: 400 },
       );
     }

@@ -63,7 +63,7 @@ async function streamRecommendations(
 export function useQuiz() {
   const [step, setStep] = useState(0);
   const [experience, setExperience] = useState<ExperienceLevel | "">("");
-  const [mood, setMood] = useState<MoodValue | "">("");
+  const [mood, setMood] = useState<MoodValue[]>([]);
   const [themes, setThemes] = useState<ThemeValue[]>([]);
   const [commitment, setCommitment] = useState<QuizCommitmentValue | "">("");
   const [results, setResults] = useState<Recommendation[] | null>(null);
@@ -74,17 +74,26 @@ export function useQuiz() {
   // q1=experience, q2=mood, q3=themes, q4=commitment
   const canProceed = () => {
     if (step === 1) return experience !== "";
-    if (step === 2) return mood !== "";
-    if (step === 3) return themes.length > 0;
+    if (step === 2) return mood.length > 0;
+    if (step === 3) return true;
     if (step === 4) return commitment !== "";
     return true;
   };
+
+  const toggleMood = (value: MoodValue) =>
+    setMood((prev) =>
+      prev.includes(value)
+        ? prev.filter((m) => m !== value)
+        : prev.length < 2
+          ? [...prev, value]
+          : prev,
+    );
 
   const toggleTheme = (value: ThemeValue) =>
     setThemes((prev) =>
       prev.includes(value)
         ? prev.filter((t) => t !== value)
-        : prev.length < 2
+        : prev.length < 3
           ? [...prev, value]
           : prev,
     );
@@ -174,7 +183,7 @@ export function useQuiz() {
   const handleStartOver = () => {
     setStep(0);
     setExperience("");
-    setMood("");
+    setMood([]);
     setThemes([]);
     setCommitment("");
     setResults(null);
@@ -192,7 +201,7 @@ export function useQuiz() {
     experience,
     setExperience,
     mood,
-    setMood,
+    toggleMood,
     themes,
     toggleTheme,
     commitment,
