@@ -88,7 +88,7 @@ describe("useQuiz", () => {
       result.current.handleStartOver();
     });
     expect(result.current.themes).toEqual([]);
-    expect(result.current.commitment).toBe("");
+    expect(result.current.commitment).toBe("no-preference");
   });
 
   it("step is 0 on landing screen", () => {
