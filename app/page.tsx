@@ -42,7 +42,7 @@ export default function Page() {
   } = useQuiz();
 
   return (
-    <div className="bg-background text-white flex flex-col h-svh overflow-hidden">
+    <div className="bg-background text-white flex flex-col h-full">
       <Header
         isQuiz={isQuiz}
         step={step}
